@@ -6,7 +6,14 @@
     </d-header>
     <d-layout>
       <d-aside class="daside-2">
-        <d-accordion :data="menu" class="menu"></d-accordion>
+        <d-menu mode="vertical" :default-select-keys="[route.name]" class="menu" @select="handleChangeMenu">
+          <d-menu-item :key="menu.link" v-for="menu in menuList">
+            <template #icon v-if="menu.icon">
+              <i :class="menu.icon"></i>
+            </template>
+            <span>{{menu.title}}</span>
+          </d-menu-item>
+        </d-menu>
       </d-aside>
       <d-content class="dcontent-2">
         <d-breadcrumb class="dbreadcrumb">
@@ -14,7 +21,7 @@
             <span>生信系统</span>
           </d-breadcrumb-item>
           <d-breadcrumb-item>
-            <span>面包屑</span>
+            <span>{{menuName}}</span>
           </d-breadcrumb-item>
         </d-breadcrumb>
         <div class="inner-content">
@@ -27,22 +34,40 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import {ref, watch} from "vue";
+import {useRoute, useRouter} from "vue-router";
+const route = useRoute()
+const menuName = ref('')
 
-const menu = ref([
+const menuList = ref([
   {
     title: '品系',
-    open: false,
+    link: 'strain',
+    icon: undefined
   },
   {
     title: '基因',
-    open: false,
+    link: 'allele',
   },
   {
     title: '注解',
+    link: 'annotate',
   },
 ])
-
+watch(() => route.name, (val) => {
+  const nowMenu  = menuList.value.filter((item) => item.link === val)
+  if (nowMenu.length >0 ){
+    menuName.value = nowMenu[0].title
+  }else{
+    menuName.value = '未知路径'
+  }
+},{
+  immediate: true
+})
+const router = useRouter()
+const handleChangeMenu = (val)=>{
+  router.push({name:val.key})
+}
 </script>
 
 <style lang="scss" scoped>
@@ -55,7 +80,7 @@ const menu = ref([
 .daside-2 {
   border-left: 1px solid transparent;
   .menu{
-    width: 180px;
+    width: 160px;
   }
 }
 
@@ -104,5 +129,9 @@ const menu = ref([
   align-items: center;
   justify-content: center;
 }
-
+:deep(li.devui-menu-item){
+  width: 100%;
+  text-align: center;
+  display: block;
+}
 </style>
