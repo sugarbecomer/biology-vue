@@ -14,12 +14,31 @@ const data = {
   strain_annotate: ['张三品系注解1','张三品系注解2']
 }
 const tableData = ref([data])
+const queryForm = ref({
+  query: ''
+})
 </script>
 
 <template>
   <d-row type="flex" class="table-operation">
-    <d-col flex="auto" >auto</d-col>
-    <d-col flex="300px"><d-button variant="solid" size="md" color="primary">新增</d-button> <d-button variant="solid" size="md" color="secondary">修改</d-button> <d-button variant="solid" size="md" color="danger">删除</d-button></d-col>
+    <d-col flex="auto" >
+      <d-form class="query-form" :data="queryForm" label-size="sm">
+        <d-row :gutter="10" class="query-padding">
+          <d-col :span="6" >
+            <d-form-item field="name" label="查询数据" >
+              <d-input v-model="queryForm.query" placeholder="可搜索任意字段的数据"/>
+            </d-form-item>
+          </d-col>
+          <d-col :span="4">
+            <d-button>搜索</d-button>
+          </d-col>>
+        </d-row>
+      </d-form>
+    </d-col>
+    <d-col flex="100px">
+      <d-button variant="solid" size="md" color="primary">新增</d-button>
+<!--      <d-button variant="solid" size="md" color="secondary">修改</d-button> <d-button variant="solid" size="md" color="danger">删除</d-button>-->
+    </d-col>
   </d-row>
   <d-table table-layout="auto" :data="tableData" style="width: 100%" header-bg>
     <d-column field="number" header="序列号"></d-column>
