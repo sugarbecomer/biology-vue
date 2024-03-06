@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Add from './add.vue'
 import {ref} from "vue";
 const data = {
   number: '#123',
@@ -17,6 +18,19 @@ const tableData = ref([data])
 const queryForm = ref({
   query: ''
 })
+const AddInfo = ref({
+  title: '',
+  open: false,
+  data: {},
+  onCloe:()=>{
+   AddInfo.value.open = false
+  }
+})
+const onAdd = ()=>{
+  AddInfo.value.title = "新增品系"
+  AddInfo.value.data = {}
+  AddInfo.value.open = true
+}
 </script>
 
 <template>
@@ -36,7 +50,7 @@ const queryForm = ref({
       </d-form>
     </d-col>
     <d-col flex="100px">
-      <d-button variant="solid" size="md" color="primary">新增</d-button>
+      <d-button variant="solid" size="md" color="primary" icon="add" @click="onAdd">新增</d-button>
 <!--      <d-button variant="solid" size="md" color="secondary">修改</d-button> <d-button variant="solid" size="md" color="danger">删除</d-button>-->
     </d-col>
   </d-row>
@@ -67,6 +81,7 @@ const queryForm = ref({
       </template>
     </d-column>
   </d-table>
+  <Add v-model:open="AddInfo.open" v-model:data="AddInfo.data" :title="AddInfo.title" @close="AddInfo.onCloe"/>
 </template>
 
 <style lang="scss" scoped>
