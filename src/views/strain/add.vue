@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import Extra from "@/views/strain/components/extra.vue";
 import {computed} from "vue";
-
+import {ExtraInfo} from "@/views/strain/components/extraEdit.vue";
+export interface IAddInfo{
+  number: string,
+  strain_name :string,
+  short_name: string[],
+  strain_annotate: string[],
+  strain_extra: ExtraInfo[],
+  allele: object
+}
 interface IProp  {
   title: string,
   open: boolean,
-  data: any,
+  data: IAddInfo,
 }
 const emit = defineEmits(['onClose',"update:open", "update:data"])
 const props = defineProps<IProp>()
@@ -39,8 +48,8 @@ const cancel = () => {
           </d-form-item>
         </d-col>
         <d-col :span="12">
-          <d-form-item label="品系名" prop="stain_name"  >
-            <d-input v-model="tempForm.stain_name" placeholder="请输入品系名" />
+          <d-form-item label="品系名" prop="strain_name"  >
+            <d-input v-model="tempForm.strain_name" placeholder="请输入品系名" />
           </d-form-item>
         </d-col>
       </d-row>
@@ -52,16 +61,10 @@ const cancel = () => {
 
 
       <d-form-item label="注释(品系名注解，可以是多个)" prop="stain_name" label-size="sm">
-        <d-input v-model="tempForm.stain_name" placeholder="请输入注释" />
+        <d-input v-model="tempForm.strain_annotate" placeholder="请输入注释" />
       </d-form-item>
       <d-form-item label="额外信息" prop="strain_extra" label-size="sm">
-        <d-card shadow="never">
-          <template #default>
-            <div class="emptyTip">
-              <span>暂无额外信息，点击新增</span>
-            </div>
-          </template>
-        </d-card>
+        <extra v-model="tempForm.strain_extra" />
       </d-form-item>
       <d-card shadow="never">
         <template #default>
