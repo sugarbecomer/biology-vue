@@ -2,6 +2,11 @@ import { RouteRecordRaw } from "vue-router";
 import Layout from "@/components/layout/index.vue";
 export const routes: RouteRecordRaw[] = [
     {
+        path: '/login',
+        component: ()=> import("@/views/login/login.vue"),
+        name: 'Login'
+    },
+    {
         name: 'Layout',
         path: '/',
         component: Layout,
