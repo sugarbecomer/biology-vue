@@ -1,11 +1,12 @@
 import axios from 'axios'
 import {useUserStore} from "@/store/userStore.ts";
+import {Message} from "vue-devui";
+import router from '@/router'
 
 export const request = axios.create({
     baseURL: '/api',
     timeout: 60 * 1000
 })
-
 // 请求前置拦截器
 request.interceptors.request.use(
     config => {
@@ -20,6 +21,25 @@ request.interceptors.request.use(
             config.params['t'] = new Date().getTime()
         }
         return config
+    },
+    err => {
+        return Promise.reject(err)
+    }
+)
+
+// 响应拦截器
+request.interceptors.response.use(
+    config => {
+        if (config.data.code == 401) {
+            // 401未登录
+            useUserStore().clear()
+            Message.error('请先登录')
+            router.push({ name: 'login' })
+        } else if (config.data.code >= 400) {
+            Message.error(config.data.message || '未知错误');
+            return Promise.reject(config.data)
+        }
+        return config.data
     },
     err => {
         return Promise.reject(err)

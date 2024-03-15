@@ -5,6 +5,10 @@ export const routes: RouteRecordRaw[] = [
         path: '/login',
         component: ()=> import("@/views/login/login.vue"),
         name: 'Login'
+    },{
+        path: '/register',
+        component: ()=> import("@/views/login/reg.vue"),
+        name: 'Register'
     },
     {
         name: 'Layout',

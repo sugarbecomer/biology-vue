@@ -15,17 +15,17 @@
         </div>
       </div>
       <div class="action">
-        <div class="btn" @click="onLogin">登 录</div>
+        <div class="btn" @click="onReg">注 册</div>
       </div>
       <div class="tip">
-        <span @click="toReg">还没有账号？立即注册</span>
+        <span @click="toLogin">已有账号？立即登录</span>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import {ref} from "vue";
-import {ApiLogin, ApiLoginDto} from "@/api/login.ts";
+import {ApiLoginDto, ApiRegister} from "@/api/login.ts";
 import {Message} from 'vue-devui'
 import {getSign, getTimestamp} from "@/util/enc.ts";
 import {useRouter} from "vue-router";
@@ -34,7 +34,7 @@ const form = ref({
   username: '',
   password: '',
 })
-const onLogin = ()=>{
+const onReg = ()=>{
   if(!form.value.username || !form.value.password){
     Message.warning('账号或密码不能为空')
     return
@@ -46,14 +46,14 @@ const onLogin = ()=>{
     sign: ''
   }
   data.sign = getSign(data.username, data.password, data.timestamp)
-  ApiLogin(data).then(res=>{
+  ApiRegister(data).then(res=>{
     console.log(res)
   })
 }
 
-const toReg = ()=>{
+const toLogin = ()=>{
   router.push({
-    name: 'Register'
+    name: 'Login'
   })
 }
 </script>
