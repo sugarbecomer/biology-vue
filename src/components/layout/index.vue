@@ -89,7 +89,7 @@ const handleChangeMenu = (val)=>{
   height: 60px;
   display: flex;
   align-items: center;
-  background-color: #333854;
+  background-color: #6784e5;
 
   .logo-devui {
     width: 26px;
@@ -123,7 +123,7 @@ const handleChangeMenu = (val)=>{
 .dfooter-2 {
   height: 50px;
   color: #fff;
-  background-color: #333854;
+  background-color: #6784e5;
   padding: 8px 24px;
   display: flex;
   align-items: center;

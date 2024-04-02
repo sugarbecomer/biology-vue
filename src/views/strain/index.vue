@@ -6,7 +6,7 @@ import {IAddInfo} from "@/views/strain/add.vue";
 const data = {
   number: '#123',
   short_name: '张品',
-  stain_name: '张三品系',
+  strain_name: '张三品系',
   allele: [{
     allele_name: '基因1',
     genome_name: '基因1修饰情况',
@@ -47,6 +47,23 @@ const onAdd = () => {
   },
       AddInfo.value.open = true
 }
+const modalInfo = ref({
+  open: false,
+  msg: '',
+  close: (flag:boolean) => {
+    modalInfo.value.open = false
+    if(flag){
+      console.log(flag);
+    }
+  },
+  row:{}
+})
+
+const onDel = (scope: any) => {
+  modalInfo.value.row = scope
+  modalInfo.value.msg = `确定删除 ${scope.row.strain_name} 吗？`
+  modalInfo.value.open = true
+}
 </script>
 
 <template>
@@ -74,7 +91,7 @@ const onAdd = () => {
   <d-table table-layout="auto" :data="tableData" style="width: 100%" header-bg>
     <d-column field="number" header="序列号"></d-column>
     <d-column field="short_name" header="简称"></d-column>
-    <d-column field="stain_name" header="品系名"></d-column>
+    <d-column field="strain_name" header="品系名"></d-column>
     <d-column field="allele" header="基因名">
       <template #default="scope">
         <template v-for="item in scope.row.allele">
@@ -97,8 +114,24 @@ const onAdd = () => {
         </template>
       </template>
     </d-column>
+    <d-column field="operation" header="操作">
+      <template #default="scope">
+        <d-button variant="solid" size="sm" color="primary" @click="onEdit(scope)">编辑</d-button>
+
+        <d-button variant="solid" size="sm" color="danger" @click="onDel(scope)">删除</d-button>
+      </template>
+    </d-column>
   </d-table>
   <Add v-model:open="AddInfo.open" v-model:data="AddInfo.data" :title="AddInfo.title" @close="AddInfo.onCloe"/>
+  <d-modal v-model="modalInfo.open" title="温馨提示" type="warning">
+    <div>{{modalInfo.msg}}</div>
+    <template #footer>
+      <d-modal-footer style="text-align: right; padding-right: 20px;">
+        <d-button @click="modalInfo.close(true)" type="primary">确认</d-button>
+        <d-button @click="modalInfo.close(false)">取消</d-button>
+      </d-modal-footer>
+    </template>
+  </d-modal>
 </template>
 
 <style lang="scss" scoped>
