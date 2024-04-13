@@ -39,7 +39,13 @@ request.interceptors.response.use(
             Message.error(config.data.message || '未知错误');
             return Promise.reject(config.data)
         }
-        return config.data
+        // 登录成功获取 token
+        if (config.request.responseURL.endsWith("/login") && config.data.code == 200){
+            const token = config.data.data.token
+            const userStore = useUserStore()
+            userStore.token = token;
+        }
+        return config
     },
     err => {
         return Promise.reject(err)

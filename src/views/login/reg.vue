@@ -42,12 +42,13 @@ const onReg = ()=>{
   const data:ApiLoginDto = {
     username: form.value.username,
     password: form.value.password,
-    timestamp: getTimestamp(),
+    time: getTimestamp(),
     sign: ''
   }
-  data.sign = getSign(data.username, data.password, data.timestamp)
+  data.sign = getSign(data.username, data.password, data.time)
   ApiRegister(data).then(res=>{
-    console.log(res)
+    Message.success(res.data.message || '操作成功')
+    toLogin()
   })
 }
 

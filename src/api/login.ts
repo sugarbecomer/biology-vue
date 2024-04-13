@@ -3,7 +3,7 @@ import {request} from '@/util/request'
 export interface ApiLoginDto {
     username: string,
     password: string
-    timestamp: number,
+    time: number,
     sign: string
 }
 

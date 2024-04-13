@@ -27,7 +27,7 @@
 import {ref} from "vue";
 import {ApiLogin, ApiLoginDto} from "@/api/login.ts";
 import {Message} from 'vue-devui'
-import {getSign, getTimestamp} from "@/util/enc.ts";
+import {getPassword, getSign, getTimestamp} from "@/util/enc.ts";
 import {useRouter} from "vue-router";
 const router = useRouter()
 const form = ref({
@@ -42,12 +42,14 @@ const onLogin = ()=>{
   const data:ApiLoginDto = {
     username: form.value.username,
     password: form.value.password,
-    timestamp: getTimestamp(),
+    time: getTimestamp(),
     sign: ''
   }
-  data.sign = getSign(data.username, data.password, data.timestamp)
-  ApiLogin(data).then(res=>{
-    console.log(res)
+  data.password = getPassword(data.password)
+  data.sign = getSign(data.username, data.password, data.time)
+  ApiLogin(data).then((res)=>{
+    Message.success(res.data.message || '操作成功')
+    router.push({name: 'strain'})
   })
 }
 
