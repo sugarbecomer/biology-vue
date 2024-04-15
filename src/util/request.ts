@@ -12,7 +12,7 @@ request.interceptors.request.use(
     config => {
         let userStore = useUserStore()
         if (userStore.token !== '') {
-            config.headers!['authorization'] = `Bearer ${userStore.token}`
+            config.headers!['x-token'] = `${userStore.token}`
         }
         if (config.method?.toLowerCase() == 'get') {
             if (!config.params) {

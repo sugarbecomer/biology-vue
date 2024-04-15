@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import Add from './add.vue'
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {IAddInfo} from "@/views/strain/add.vue";
+import {ApiStrainList} from "@/api/strain.ts";
 
 const data = {
   number: '#123',
@@ -17,10 +18,24 @@ const data = {
   strain_annotate: ['张三品系注解1', '张三品系注解2']
 }
 const tableData = ref([data])
-const queryForm = ref({
-  query: ''
+const pageInfo = ref({
+  page_no: 1,
+  page_size: 20
 })
-
+const queryForm = ref({
+  field: '',
+  order: '',
+  key: ''
+})
+const handleQuery = ()=>{
+  const params = {...queryForm.value,...pageInfo.value}
+  ApiStrainList(params).then(res=>{
+    console.log(res)
+  })
+}
+onMounted(()=>{
+  handleQuery()
+})
 interface AddInfoType {
   title: string,
   open: boolean,
@@ -64,6 +79,7 @@ const onDel = (scope: any) => {
   modalInfo.value.msg = `确定删除 ${scope.row.strain_name} 吗？`
   modalInfo.value.open = true
 }
+
 </script>
 
 <template>
@@ -71,15 +87,14 @@ const onDel = (scope: any) => {
     <d-col flex="auto">
       <d-form class="query-form" :data="queryForm" label-size="sm">
         <d-row :gutter="10" class="query-padding">
-          <d-col :span="6">
+          <d-col :span="8">
             <d-form-item field="name" label="查询数据">
-              <d-input v-model="queryForm.query" placeholder="可搜索任意字段的数据"/>
+              <d-input v-model="queryForm.field" placeholder="可搜索任意字段的数据"/>
             </d-form-item>
           </d-col>
           <d-col :span="4">
-            <d-button>搜索</d-button>
+            <d-button @click="handleQuery">搜索</d-button>
           </d-col>
-          >
         </d-row>
       </d-form>
     </d-col>
