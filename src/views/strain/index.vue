@@ -58,7 +58,7 @@ const onAdd = () => {
     strain_name: '',
     strain_annotate: [],
     strain_extra: [],
-    allele: {},
+    allele: [{name:"",genome:""}],
   },
       AddInfo.value.open = true
 }

@@ -63,6 +63,11 @@ div.form-operation {
   display: block;
   text-align: center;
 }
+.flex{
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
 
 .devui-menu-vertical {
   border-right: unset !important;
@@ -81,4 +86,11 @@ div.form-operation {
 }
 .mt-2{
   margin-top: 1rem;
+}
+div.devui-modal{
+  max-height: 95vh !important;
+  div.devui-modal__body{
+    max-height: calc(95vh - 56px) !important;
+    overflow-y: auto !important;
+  }
 }
