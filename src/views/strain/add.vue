@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import Extra from "@/views/strain/components/extra.vue";
-import {computed} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {ExtraInfo} from "@/views/strain/components/extraEdit.vue";
+import {getSign, getTimestamp} from "@/util/enc.ts";
+import {ApiGetNumber, ApiStrainAdd} from "@/api/strain.ts";
+import {Message} from "vue-devui";
 interface IAllele {
   name: string,
   genome: string
@@ -51,6 +54,29 @@ const onAddAllele = ()=>{
 const onDelAllele = ()=>{
   tempForm.value.allele.pop()
 }
+const loading = ref(false)
+const onSave = ()=>{
+  loading.value = true
+  ApiStrainAdd(tempForm.value).then(res=>{
+    Message.success(res.data.message || "保存成功")
+    emit('onClose', true)
+  }).finally(()=>{
+    loading.value = false
+  })
+}
+const handleGetNumber = ()=>{
+  const time = getTimestamp()
+  const sign = getSign(String(time))
+  const data = {
+    time,sign
+  }
+  ApiGetNumber(data).then(res=>{
+    tempForm.value.number = res.data.data.mumber
+  })
+}
+onMounted(()=>{
+  handleGetNumber()
+})
 </script>
 
 <template>
@@ -77,7 +103,9 @@ const onDelAllele = ()=>{
 
 
       <d-form-item label="注释(品系名注解，可以是多个)" prop="stain_name" label-size="sm">
-        <d-input v-model="tempForm.strain_annotate" placeholder="请输入注释"/>
+<!--        <d-input v-model="tempForm.strain_annotate" placeholder="请输入注释"/>-->
+        <d-select v-model="tempForm.strain_annotate" :options="[]" :allow-clear="true" multiple filter allow-create
+                  placeholder="请选择或输入注释"></d-select>
       </d-form-item>
       <d-form-item label="额外信息" prop="strain_extra" label-size="sm">
         <extra v-model="tempForm.strain_extra"/>
@@ -107,7 +135,7 @@ const onDelAllele = ()=>{
 
 
       <d-form-operation class="form-operation">
-        <d-button variant="solid">保存</d-button>
+        <d-button variant="solid" @click="onSave">保存</d-button>
         <d-button @click="cancel">取消</d-button>
       </d-form-operation>
 

@@ -45,7 +45,7 @@ const onReg = ()=>{
     time: getTimestamp(),
     sign: ''
   }
-  data.sign = getSign(data.username, data.password, data.time)
+  data.sign = getSign(data.username, String(data.time), data.password)
   ApiRegister(data).then(res=>{
     Message.success(res.data.message || '操作成功')
     toLogin()

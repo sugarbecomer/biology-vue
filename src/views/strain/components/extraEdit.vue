@@ -2,8 +2,8 @@
 import {computed, watch} from "vue";
 
 export interface ExtraInfo {
-  key: string;
-  value: string;
+  extra_key: string;
+  extra_value: string;
 }
 
 interface IProp {
@@ -32,8 +32,8 @@ const tempValue = computed({
 })
 const onAdd = () => {
   tempValue.value.push({
-    key: '',
-    value: ''
+    extra_key: '',
+    extra_value: ''
   })
 }
 watch(()=>props.open, (val)=>{
@@ -41,12 +41,12 @@ watch(()=>props.open, (val)=>{
     return
   }
   tempValue.value.push({
-    key: '作者',
-    value: ''
+    extra_key: '作者',
+    extra_value: ''
   })
   tempValue.value.push({
-    key: '时间',
-    value: ''
+    extra_key: '时间',
+    extra_value: ''
   })
 })
 
@@ -58,9 +58,9 @@ watch(()=>props.open, (val)=>{
       <template v-for="(item, index) in tempValue" :key="index">
         <d-row :gutter="10" class="extra-row">
           <d-col :span="23">
-            <d-input v-model="item.value" placeholder="value">
+            <d-input v-model="item.extra_value" placeholder="value">
               <template #prepend>
-                <d-input v-model="item.key" placeholder="key"></d-input>
+                <d-input v-model="item.extra_key" placeholder="key"></d-input>
               </template>
             </d-input>
           </d-col>

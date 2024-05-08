@@ -46,7 +46,7 @@ const onLogin = ()=>{
     sign: ''
   }
   data.password = getPassword(data.password)
-  data.sign = getSign(data.username, data.password, data.time)
+  data.sign = getSign(data.username, String(data.time), data.password)
   ApiLogin(data).then((res)=>{
     Message.success(res.data.message || '操作成功')
     router.push({name: 'strain'})

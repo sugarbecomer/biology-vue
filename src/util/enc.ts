@@ -1,8 +1,8 @@
 import { md5 } from 'js-md5';
 
 // 获取sign参数
-export const getSign = (username:string, password:string, timestamp:number):string  => {
-    const str = username + timestamp + password;
+export const getSign = (...args :string[]):string  => {
+    const str = args.join('');
     // md5加密
     return md5(str).toUpperCase();
 }

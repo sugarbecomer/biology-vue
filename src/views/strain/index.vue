@@ -4,20 +4,7 @@ import {onMounted, ref} from "vue";
 import {IAddInfo} from "@/views/strain/add.vue";
 import {ApiStrainList} from "@/api/strain.ts";
 
-const data = {
-  number: '#123',
-  short_name: '张品',
-  strain_name: '张三品系',
-  allele: [{
-    allele_name: '基因1',
-    genome_name: '基因1修饰情况',
-  }, {
-    allele_name: '基因2',
-    genome_name: '基因2修饰情况',
-  }],
-  strain_annotate: ['张三品系注解1', '张三品系注解2']
-}
-const tableData = ref([data])
+const tableData = ref([])
 const pageInfo = ref({
   page_no: 1,
   page_size: 20
@@ -30,7 +17,7 @@ const queryForm = ref({
 const handleQuery = ()=>{
   const params = {...queryForm.value,...pageInfo.value}
   ApiStrainList(params).then(res=>{
-    console.log(res)
+    tableData.value = res.data.data.strain_list
   })
 }
 onMounted(()=>{
@@ -39,15 +26,19 @@ onMounted(()=>{
 interface AddInfoType {
   title: string,
   open: boolean,
-  data: IAddInfo,
-  onCloe: () => {}
+  data?: IAddInfo,
+  onCloe: (flag:boolean) => void
 }
 
 const AddInfo = ref<AddInfoType>({
+  data: undefined,
   title: '',
   open: false,
-  onCloe: () => {
+  onCloe: (flag:boolean) => {
     AddInfo.value.open = false
+    if(flag){
+      handleQuery()
+    }
   }
 })
 const onAdd = () => {
@@ -110,14 +101,14 @@ const onDel = (scope: any) => {
     <d-column field="allele" header="基因名">
       <template #default="scope">
         <template v-for="item in scope.row.allele">
-          <d-tag size="sm" color="blue-w98">{{ item.allele_name }}</d-tag>
+          <d-tag size="sm" color="blue-w98">{{ item.name }}</d-tag>
         </template>
       </template>
     </d-column>
     <d-column field="allele" header="基因修饰情况">
       <template #default="scope">
         <template v-for="item in scope.row.allele">
-          <d-tag size="sm" color="green-w98">{{ item.genome_name }}</d-tag>
+          <d-tag size="sm" color="green-w98">{{ item.genome }}</d-tag>
         </template>
       </template>
     </d-column>
@@ -137,7 +128,7 @@ const onDel = (scope: any) => {
       </template>
     </d-column>
   </d-table>
-  <Add v-model:open="AddInfo.open" v-model:data="AddInfo.data" :title="AddInfo.title" @close="AddInfo.onCloe"/>
+  <Add v-if="AddInfo.open" v-model:open="AddInfo.open" v-model:data="AddInfo.data!" :title="AddInfo.title" @close="AddInfo.onCloe"/>
   <d-modal v-model="modalInfo.open" title="温馨提示" type="warning">
     <div>{{modalInfo.msg}}</div>
     <template #footer>

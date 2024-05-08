@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import {computed, ref} from "vue";
-import ExtraEdit from "@/views/strain/components/extraEdit.vue";
+import ExtraEdit, {ExtraInfo} from "@/views/strain/components/extraEdit.vue";
 interface IProp {
-  modelValue: any;
+  modelValue: ExtraInfo[];
 }
 const emit = defineEmits(['update:modelValue']);
 const props = withDefaults(defineProps<IProp>(), {
-  modelValue: null,
+  modelValue: undefined,
 });
 const tempValue = computed({
   get() {
@@ -25,7 +25,7 @@ const onEdit = () => {
 // 检测额外信息是否为空
 const extraInfoIsNotEmpty = computed(()=>{
 
-  return tempValue.value && tempValue.value.length>0 && tempValue.value.find(item=> item.key && item.value)
+  return tempValue.value && tempValue.value.length>0 && tempValue.value.find(item=> item.extra_key && item.extra_value)
 })
 </script>
 <template>
@@ -36,8 +36,8 @@ const extraInfoIsNotEmpty = computed(()=>{
       </div>
       <d-row class="clear-card pointer" @click="onEdit" wrap v-else>
         <template v-for="item in tempValue" :key="item.key">
-          <d-col :span="12" v-if="item.key && item.value">
-            <h4>{{item.key}}：</h4> <span>{{item.value}}</span>
+          <d-col :span="12" v-if="item.extra_key && item.extra_value">
+            <h4>{{item.extra_key}}：</h4> <span>{{item.extra_value}}</span>
           </d-col>
         </template>
 
