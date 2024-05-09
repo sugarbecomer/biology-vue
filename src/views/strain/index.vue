@@ -1,23 +1,56 @@
 <script setup lang="ts">
 import Add from './add.vue'
 import {onMounted, ref} from "vue";
-import {IAddInfo} from "@/views/strain/add.vue";
-import {ApiStrainList} from "@/api/strain.ts";
+import {IAddInfo, IAllele} from "@/views/strain/add.vue";
+import {ApiStrainDel, ApiStrainList} from "@/api/strain.ts";
+import {ExtraInfo} from "@/views/strain/components/extraEdit.vue";
+import {Message} from "vue-devui";
 
-const tableData = ref([])
+
+export interface IStrainList {
+  strain_id: number,
+  number: string,
+  short_name: string[],
+  strain_name: string,
+  strain_annotate: string[],
+  strain_extra: ExtraInfo[],
+  allele: IAllele[],
+}
+const tableData = ref<IStrainList[]>([])
 const pageInfo = ref({
   page_no: 1,
-  page_size: 20
+  page_size: 20,
+  total: 0,
 })
 const queryForm = ref({
   field: '',
   order: '',
   key: ''
 })
+const loading = ref(false)
 const handleQuery = ()=>{
+  loading.value = true
   const params = {...queryForm.value,...pageInfo.value}
   ApiStrainList(params).then(res=>{
+    pageInfo.value.total = res.data.data.total
     tableData.value = res.data.data.strain_list
+  }).finally(()=>{
+    loading.value = false
+  })
+}
+const queryMore = ()=>{
+  if (pageInfo.value.total < tableData.value.length || loading.value){
+    console.log(pageInfo.value.total, loading.value)
+    return
+  }
+  loading.value = true
+  pageInfo.value.page_no++
+  const params = {...queryForm.value,...pageInfo.value}
+
+  ApiStrainList(params).then(res=>{
+    tableData.value.push(...res.data.data.strain_list)
+  }).finally(()=>{
+    loading.value = false
   })
 }
 onMounted(()=>{
@@ -59,14 +92,19 @@ const modalInfo = ref({
   close: (flag:boolean) => {
     modalInfo.value.open = false
     if(flag){
-      console.log(flag);
+      loading.value = true
+      ApiStrainDel((modalInfo.value.row as any).id).then(res=>{
+        Message.success(res.data.message || "删除成功")
+      }).finally(()=>{
+        handleQuery()
+      })
     }
   },
   row:{}
 })
 
 const onDel = (scope: any) => {
-  modalInfo.value.row = scope
+  modalInfo.value.row = scope.row
   modalInfo.value.msg = `确定删除 ${scope.row.strain_name} 吗？`
   modalInfo.value.open = true
 }
@@ -94,7 +132,7 @@ const onDel = (scope: any) => {
       <!--      <d-button variant="solid" size="md" color="secondary">修改</d-button> <d-button variant="solid" size="md" color="danger">删除</d-button>-->
     </d-col>
   </d-row>
-  <d-table table-layout="auto" :data="tableData" style="width: 100%" header-bg>
+  <d-table table-layout="auto" :show-loading="loading" :data="tableData" style="width: 100%;height: calc(100% - 50px)" header-bg fix-header :lazy="true" @load-more="queryMore">
     <d-column field="number" header="序列号"></d-column>
     <d-column field="short_name" header="简称"></d-column>
     <d-column field="strain_name" header="品系名"></d-column>

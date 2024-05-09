@@ -5,7 +5,7 @@ import {ExtraInfo} from "@/views/strain/components/extraEdit.vue";
 import {getSign, getTimestamp} from "@/util/enc.ts";
 import {ApiGetNumber, ApiStrainAdd} from "@/api/strain.ts";
 import {Message} from "vue-devui";
-interface IAllele {
+export interface IAllele {
   name: string,
   genome: string
 }

@@ -83,7 +83,9 @@ const handleChangeMenu = (val)=>{
     width: 160px;
   }
 }
-
+.devui-layout__aside{
+  height: calc(100% - 120px);
+}
 .dheader-2 {
   position: relative;
   height: 60px;
@@ -107,11 +109,12 @@ const handleChangeMenu = (val)=>{
   height: 100%;
   padding: 0px 40px 40px 40px;
   background-color: #f3f6f8;
-
+  box-sizing: border-box;
   .inner-content {
     background-color: #fff;
     padding: 16px;
     height: calc(100% - 20px);
+    overflow-y: auto;
   }
 
   .dbreadcrumb {
