@@ -109,6 +109,14 @@ const onDel = (scope: any) => {
   modalInfo.value.open = true
 }
 
+
+const handleSortChange = ({ field, direction }) => {
+  queryForm.value.field = field;
+  queryForm.value.order = direction.toLowerCase();
+  pageInfo.value.total = 0
+  pageInfo.value.page_no = 1
+  handleQuery()
+};
 </script>
 
 <template>
@@ -132,25 +140,25 @@ const onDel = (scope: any) => {
       <!--      <d-button variant="solid" size="md" color="secondary">修改</d-button> <d-button variant="solid" size="md" color="danger">删除</d-button>-->
     </d-col>
   </d-row>
-  <d-table table-layout="auto" :show-loading="loading" :data="tableData" style="width: 100%;height: calc(100% - 50px)" header-bg fix-header :lazy="true" @load-more="queryMore">
-    <d-column field="number" header="序列号"></d-column>
-    <d-column field="short_name" header="简称"></d-column>
-    <d-column field="strain_name" header="品系名"></d-column>
-    <d-column field="allele" header="基因名">
+  <d-table table-layout="auto" :show-loading="loading" :data="tableData" style="width: 100%;height: calc(100% - 50px)" header-bg fix-header :lazy="true" @load-more="queryMore" @sort-change="handleSortChange">
+    <d-column field="number" header="序列号" sortable></d-column>
+    <d-column field="short_name" header="简称" sortable></d-column>
+    <d-column field="strain_name" header="品系名" sortable></d-column>
+    <d-column field="allele" header="基因名" sortable>
       <template #default="scope">
         <template v-for="item in scope.row.allele">
           <d-tag size="sm" color="blue-w98">{{ item.name }}</d-tag>
         </template>
       </template>
     </d-column>
-    <d-column field="allele" header="基因修饰情况">
+    <d-column field="allele" header="基因修饰情况" sort-method="sortMethod">
       <template #default="scope">
         <template v-for="item in scope.row.allele">
           <d-tag size="sm" color="green-w98">{{ item.genome }}</d-tag>
         </template>
       </template>
     </d-column>
-    <d-column field="strain_annotate" header="品系注解">
+    <d-column field="strain_annotate" header="品系注解" sortable>
 
       <template #default="scope">
         <template v-for="item in scope.row.strain_annotate">
