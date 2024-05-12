@@ -5,9 +5,13 @@ import {ExtraInfo} from "@/views/strain/components/extraEdit.vue";
 import {getSign, getTimestamp} from "@/util/enc.ts";
 import {ApiGetNumber, ApiStrainAdd} from "@/api/strain.ts";
 import {Message} from "vue-devui";
+import {ApiAlleleSearch} from "@/api/allele.ts";
 export interface IAllele {
+  id?: number,
   name: string,
-  genome: string
+  genome: string,
+  loading?: boolean
+  options?: any
 }
 export interface IAddInfo {
   number: string,
@@ -74,6 +78,26 @@ const handleGetNumber = ()=>{
     tempForm.value.number = res.data.data.mumber
   })
 }
+// 查询基因列表
+const handleQueryAllele = (value:string, row: IAllele)=>{
+  row.loading = true
+  if(!value){
+    return
+  }
+  const params = {
+    name: value
+  }
+  ApiAlleleSearch(params).then(res=>{
+    row.options = res.data.data.allele
+  }).finally(()=>{
+    row.loading = false
+  })
+}
+const handleAlleleChange = (data:any, row:IAllele)=>{
+  row.id = data.id
+  row.name = data.name
+  row.genome = data.genome
+}
 onMounted(()=>{
   handleGetNumber()
 })
@@ -116,12 +140,17 @@ onMounted(()=>{
             <d-row :gutter="20">
               <d-col :span="8">
                 <d-form-item label="基因名" prop="allele_name">
-                  <d-input v-model="item.name" placeholder="请输入基因名"/>
+<!--                  <d-input v-model="item.name" placeholder="请输入基因名"/>-->
+
+                  <d-select v-model="item.name" :filter="(val)=>handleQueryAllele(val,item)" :allow-clear="true" remote :loading="item.loading" allow-create
+                            placeholder="请输入基因名" @value-change="(val)=>handleAlleleChange(val.value, item)">
+                    <d-option v-for="option in item.options || []" :key="'allele_name_' + option.id" :value="option" :name="option.name"></d-option>
+                  </d-select>
                 </d-form-item>
               </d-col>
               <d-col :span="16">
                 <d-form-item label="基因修饰情况" prop="allele_name">
-                  <d-input v-model="item.genome" placeholder="请输入基因修饰情况"/>
+                  <d-input :disabled="item.id" v-model="item.genome" placeholder="请输入基因修饰情况"/>
                 </d-form-item>
               </d-col>
             </d-row>
