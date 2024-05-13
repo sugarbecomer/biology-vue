@@ -88,7 +88,8 @@ const handleQueryAllele = (value:string, row: IAllele)=>{
     name: value
   }
   ApiAlleleSearch(params).then(res=>{
-    row.options = res.data.data.allele
+    // 如果没查询到任何基因信息则默认新增一个value值的基因名的基因信息
+    row.options = res.data.data.allele || [{name: value, genome: ""}];
   }).finally(()=>{
     row.loading = false
   })

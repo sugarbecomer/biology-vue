@@ -29,6 +29,10 @@ const queryForm = ref({
 })
 const loading = ref(false)
 const handleQuery = ()=>{
+  pageInfo.value.page_no = 1
+  queryList()
+}
+const queryList = ()=>{
   loading.value = true
   const params = {...queryForm.value,...pageInfo.value}
   ApiStrainList(params).then(res=>{
@@ -54,7 +58,7 @@ const queryMore = ()=>{
   })
 }
 onMounted(()=>{
-  handleQuery()
+  queryList()
 })
 interface AddInfoType {
   title: string,
@@ -70,7 +74,7 @@ const AddInfo = ref<AddInfoType>({
   onCloe: (flag:boolean) => {
     AddInfo.value.open = false
     if(flag){
-      handleQuery()
+      queryList()
     }
   }
 })
@@ -96,7 +100,7 @@ const modalInfo = ref({
       ApiStrainDel((modalInfo.value.row as any).id).then(res=>{
         Message.success(res.data.message || "删除成功")
       }).finally(()=>{
-        handleQuery()
+        queryList()
       })
     }
   },
@@ -115,7 +119,7 @@ const handleSortChange = ({ field, direction }) => {
   queryForm.value.order = direction.toLowerCase();
   pageInfo.value.total = 0
   pageInfo.value.page_no = 1
-  handleQuery()
+  queryList()
 };
 </script>
 
@@ -126,7 +130,7 @@ const handleSortChange = ({ field, direction }) => {
         <d-row :gutter="10" class="query-padding">
           <d-col :span="8">
             <d-form-item field="name" label="查询数据">
-              <d-input v-model="queryForm.field" placeholder="可搜索任意字段的数据"/>
+              <d-input v-model="queryForm.key" placeholder="可搜索任意字段的数据"/>
             </d-form-item>
           </d-col>
           <d-col :span="4">
