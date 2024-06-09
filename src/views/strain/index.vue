@@ -64,7 +64,8 @@ interface AddInfoType {
   title: string,
   open: boolean,
   data?: IAddInfo,
-  onCloe: (flag:boolean) => void
+  onCloe: (flag:boolean) => void,
+  openType: number
 }
 
 const AddInfo = ref<AddInfoType>({
@@ -76,7 +77,8 @@ const AddInfo = ref<AddInfoType>({
     if(flag){
       queryList()
     }
-  }
+  },
+  openType:0
 })
 const onAdd = () => {
   AddInfo.value.title = "新增品系"
@@ -87,8 +89,22 @@ const onAdd = () => {
     strain_annotate: [],
     strain_extra: [],
     allele: [{name:"",genome:""}],
-  },
-      AddInfo.value.open = true
+
+  }
+  AddInfo.value.openType = 1
+  AddInfo.value.open = true
+}
+const onEdit = (scope: any) => {
+  AddInfo.value.title = "修改品系"
+  AddInfo.value.data = JSON.parse(JSON.stringify(scope.row))
+  AddInfo.value.data?.allele.map((item:IAllele)=>{
+    item.options = [item.name]
+  })
+  AddInfo.value.openType = 2
+  AddInfo.value.open = true
+  if(!AddInfo.value.data?.strain_extra){
+    AddInfo.value.data!.strain_extra = []
+  }
 }
 const modalInfo = ref({
   open: false,
@@ -100,7 +116,7 @@ const modalInfo = ref({
       ApiStrainDel((modalInfo.value.row as any).id).then(res=>{
         Message.success(res.data.message || "删除成功")
       }).finally(()=>{
-        queryList()
+        handleQuery()
       })
     }
   },
@@ -112,6 +128,7 @@ const onDel = (scope: any) => {
   modalInfo.value.msg = `确定删除 ${scope.row.strain_name} 吗？`
   modalInfo.value.open = true
 }
+
 
 
 const handleSortChange = ({ field, direction }) => {
@@ -172,13 +189,13 @@ const handleSortChange = ({ field, direction }) => {
     </d-column>
     <d-column field="operation" header="操作">
       <template #default="scope">
-        <d-button variant="solid" size="sm" color="primary" @click="onEdit(scope)">编辑</d-button>
-
-        <d-button variant="solid" size="sm" color="danger" @click="onDel(scope)">删除</d-button>
+        <d-button variant="solid" size="sm" color="primary" @click="onEdit(scope)" icon="edit"></d-button>
+        &ensp;
+        <d-button variant="solid" size="sm" color="danger" @click="onDel(scope)" icon="delete"></d-button>
       </template>
     </d-column>
   </d-table>
-  <Add v-if="AddInfo.open" v-model:open="AddInfo.open" v-model:data="AddInfo.data!" :title="AddInfo.title" @close="AddInfo.onCloe"/>
+  <Add v-if="AddInfo.open" v-model:open="AddInfo.open" :open-type="AddInfo.openType" v-model:data="AddInfo.data!" :title="AddInfo.title" @close="AddInfo.onCloe"/>
   <d-modal v-model="modalInfo.open" title="温馨提示" type="warning">
     <div>{{modalInfo.msg}}</div>
     <template #footer>

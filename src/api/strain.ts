@@ -11,7 +11,10 @@ export const ApiGetNumber = (data:any)=>{
 export const ApiStrainAdd = (data:any)=>{
     return request.post('/biology/strain_add', data)
 }
+export const ApiStrainUpdate = (data:any)=>{
+    return request.post('/biology/strain_update', data)
+}
 export const ApiStrainDel = (id:number)=>{
     const data = {strain_id: id}
-    return request.post('/biology/strain_del', data)
+    return request.post('/biology/strain_delete', data)
 }

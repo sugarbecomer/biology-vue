@@ -3,7 +3,7 @@ import Extra from "@/views/strain/components/extra.vue";
 import {computed, onMounted, ref} from "vue";
 import {ExtraInfo} from "@/views/strain/components/extraEdit.vue";
 import {getSign, getTimestamp} from "@/util/enc.ts";
-import {ApiGetNumber, ApiStrainAdd} from "@/api/strain.ts";
+import {ApiGetNumber, ApiStrainAdd, ApiStrainUpdate} from "@/api/strain.ts";
 import {Message} from "vue-devui";
 import {ApiAlleleSearch} from "@/api/allele.ts";
 export interface IAllele {
@@ -14,6 +14,7 @@ export interface IAllele {
   options?: any
 }
 export interface IAddInfo {
+  id?:number
   number: string,
   strain_name: string,
   short_name: string[],
@@ -26,6 +27,7 @@ interface IProp {
   title: string,
   open: boolean,
   data: IAddInfo,
+  openType: number,
 }
 
 const emit = defineEmits(['onClose', "update:open", "update:data"])
@@ -61,7 +63,8 @@ const onDelAllele = ()=>{
 const loading = ref(false)
 const onSave = ()=>{
   loading.value = true
-  ApiStrainAdd(tempForm.value).then(res=>{
+  const func = props.openType === 1 ? ApiStrainAdd : ApiStrainUpdate
+  func(tempForm.value).then(res=>{
     Message.success(res.data.message || "保存成功")
     emit('onClose', true)
   }).finally(()=>{
@@ -100,7 +103,9 @@ const handleAlleleChange = (data:any, row:IAllele)=>{
   row.genome = data.genome
 }
 onMounted(()=>{
-  handleGetNumber()
+  if(props.openType === 1){
+    handleGetNumber()
+  }
 })
 </script>
 
@@ -142,7 +147,6 @@ onMounted(()=>{
               <d-col :span="8">
                 <d-form-item label="基因名" prop="allele_name">
 <!--                  <d-input v-model="item.name" placeholder="请输入基因名"/>-->
-
                   <d-select v-model="item.name" :filter="(val)=>handleQueryAllele(val,item)" :allow-clear="true" remote :loading="item.loading" allow-create
                             placeholder="请输入基因名" @value-change="(val)=>handleAlleleChange(val.value, item)">
                     <d-option v-for="option in item.options || []" :key="'allele_name_' + option.id" :value="option" :name="option.name"></d-option>
