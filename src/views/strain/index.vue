@@ -97,7 +97,7 @@ const onAdd = () => {
 const onEdit = (scope: any) => {
   AddInfo.value.title = "修改品系"
   AddInfo.value.data = JSON.parse(JSON.stringify(scope.row))
-  AddInfo.value.data?.allele.map((item:IAllele)=>{
+  AddInfo.value.data?.allele?.map((item:IAllele)=>{
     item.options = [item.name]
   })
   AddInfo.value.openType = 2
@@ -161,7 +161,7 @@ const handleSortChange = ({ field, direction }) => {
       <!--      <d-button variant="solid" size="md" color="secondary">修改</d-button> <d-button variant="solid" size="md" color="danger">删除</d-button>-->
     </d-col>
   </d-row>
-  <d-table table-layout="auto" :show-loading="loading" :data="tableData" style="width: 100%;height: calc(100% - 50px)" header-bg fix-header :lazy="true" @load-more="queryMore" @sort-change="handleSortChange">
+  <d-table empty="暂无数据" table-layout="auto" :show-loading="loading" :data="tableData" style="width: 100%;height: calc(100% - 50px)" header-bg fix-header :lazy="true" @load-more="queryMore" @sort-change="handleSortChange">
     <d-column field="number" header="序列号" sortable></d-column>
     <d-column field="short_name" header="简称" sortable></d-column>
     <d-column field="strain_name" header="品系名" sortable></d-column>

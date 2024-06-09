@@ -94,3 +94,9 @@ div.devui-modal{
     overflow-y: auto !important;
   }
 }
+.devui-table__empty{
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+}
