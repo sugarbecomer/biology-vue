@@ -6,6 +6,7 @@ import {getSign, getTimestamp} from "@/util/enc.ts";
 import {ApiGetNumber, ApiStrainAdd, ApiStrainUpdate} from "@/api/strain.ts";
 import {Message} from "vue-devui";
 import {ApiAlleleSearch} from "@/api/allele.ts";
+
 export interface IAllele {
   id?: number,
   name: string,
@@ -13,8 +14,9 @@ export interface IAllele {
   loading?: boolean
   options?: any
 }
+
 export interface IAddInfo {
-  id?:number
+  id?: number
   number: string,
   strain_name: string,
   short_name: string[],
@@ -51,59 +53,73 @@ const tempForm = computed({
 const cancel = () => {
   tempOpen.value = false
 }
-const onAddAllele = ()=>{
+const onAddAllele = () => {
   tempForm.value.allele.push({
     name: "",
     genome: ""
   })
 }
-const onDelAllele = ()=>{
+const onDelAllele = () => {
   tempForm.value.allele.pop()
 }
 const loading = ref(false)
-const onSave = ()=>{
+const onSave = () => {
+  const data = JSON.parse(JSON.stringify(tempForm.value))
+  data.allele = data.allele.map(subData => {
+    return {
+      "id": subData.id,
+      "name": subData.name,
+      "genome": subData.genome
+    }
+  })
+  data.strain_extra = data.strain_extra.filter(item => item.extra_key && item.extra_value)
   loading.value = true
   const func = props.openType === 1 ? ApiStrainAdd : ApiStrainUpdate
-  func(tempForm.value).then(res=>{
+  func(data).then(res => {
     Message.success(res.data.message || "保存成功")
     emit('onClose', true)
-  }).finally(()=>{
+  }).finally(() => {
     loading.value = false
   })
 }
-const handleGetNumber = ()=>{
+const handleGetNumber = () => {
   const time = getTimestamp()
   const sign = getSign(String(time))
   const data = {
-    time,sign
+    time, sign
   }
-  ApiGetNumber(data).then(res=>{
+  ApiGetNumber(data).then(res => {
     tempForm.value.number = res.data.data.mumber
   })
 }
 // 查询基因列表
-const handleQueryAllele = (value:string, row: IAllele)=>{
+const handleQueryAllele = (value: string, row: IAllele) => {
   row.loading = true
-  if(!value){
+  if (!value) {
     return
   }
   const params = {
     name: value
   }
-  ApiAlleleSearch(params).then(res=>{
+  ApiAlleleSearch(params).then(res => {
     // 如果没查询到任何基因信息则默认新增一个value值的基因名的基因信息
     row.options = res.data.data.allele || [{name: value, genome: ""}];
-  }).finally(()=>{
+  }).finally(() => {
     row.loading = false
   })
 }
-const handleAlleleChange = (data:any, row:IAllele)=>{
-  row.id = data.id
+const handleAlleleChange = (data: any, row: IAllele) => {
   row.name = data.name
-  row.genome = data.genome
+  if (data.id) {
+    row.id = data.id
+    row.genome = data.genome
+  }else{
+    row.id = undefined
+    row.genome = ""
+  }
 }
-onMounted(()=>{
-  if(props.openType === 1){
+onMounted(() => {
+  if (props.openType === 1) {
     handleGetNumber()
   }
 })
@@ -133,7 +149,7 @@ onMounted(()=>{
 
 
       <d-form-item label="注释(品系名注解，可以是多个)" prop="stain_name" label-size="sm">
-<!--        <d-input v-model="tempForm.strain_annotate" placeholder="请输入注释"/>-->
+        <!--        <d-input v-model="tempForm.strain_annotate" placeholder="请输入注释"/>-->
         <d-select v-model="tempForm.strain_annotate" :options="[]" :allow-clear="true" multiple filter allow-create
                   placeholder="请选择或输入注释"></d-select>
       </d-form-item>
@@ -142,25 +158,35 @@ onMounted(()=>{
       </d-form-item>
       <d-card shadow="never">
         <template #default>
+          <d-row :gutter="20">
+            <d-col :span="8">
+              <span class="custom-form-item">
+                基因名
+              </span>
+            </d-col>
+            <d-col :span="16">
+              <span class="custom-form-item">
+                基因修饰情况
+              </span>
+            </d-col>
+          </d-row>
           <template v-for="item in tempForm.allele">
-            <d-row :gutter="20">
+            <d-row :gutter="20" class="custom-form-item-row">
               <d-col :span="8">
-                <d-form-item label="基因名" prop="allele_name">
-<!--                  <d-input v-model="item.name" placeholder="请输入基因名"/>-->
-                  <d-select v-model="item.name" :filter="(val)=>handleQueryAllele(val,item)" :allow-clear="true" remote :loading="item.loading" allow-create
+                  <!--                  <d-input v-model="item.name" placeholder="请输入基因名"/>-->
+                  <d-select v-model="item.name" :filter="(val)=>handleQueryAllele(val,item)" :allow-clear="true" remote
+                            :loading="item.loading" allow-create
                             placeholder="请输入基因名" @value-change="(val)=>handleAlleleChange(val.value, item)">
-                    <d-option v-for="option in item.options || []" :key="'allele_name_' + option.id" :value="option" :name="option.name"></d-option>
+                    <d-option v-for="option in item.options || []" :key="'allele_name_' + option.id" :value="option"
+                              :name="option.name"></d-option>
                   </d-select>
-                </d-form-item>
               </d-col>
               <d-col :span="16">
-                <d-form-item label="基因修饰情况" prop="allele_name">
                   <d-input :disabled="item.id" v-model="item.genome" placeholder="请输入基因修饰情况"/>
-                </d-form-item>
               </d-col>
             </d-row>
           </template>
-          <div class="block flex">
+          <div class="block flex custom-form-item-row">
             <d-button variant="solid" icon="add" shape="circle" @click="onAddAllele"></d-button>
             <d-button variant="solid" color="danger" icon="delete" shape="circle" @click="onDelAllele"></d-button>
           </div>
@@ -180,6 +206,14 @@ onMounted(()=>{
 
 
 <style lang="scss" scoped>
-
-
+.custom-form-item{
+  color:var(--devui-aide-text, #71757f)
+}
+.custom-form-item-row{
+  margin-top: 8px;
+}
+:deep(.devui-card__actions),:deep(.devui-card__header){
+  margin:0;
+  height: 0;
+}
 </style>

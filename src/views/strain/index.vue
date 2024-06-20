@@ -161,7 +161,7 @@ const handleSortChange = ({ field, direction }) => {
       <!--      <d-button variant="solid" size="md" color="secondary">修改</d-button> <d-button variant="solid" size="md" color="danger">删除</d-button>-->
     </d-col>
   </d-row>
-  <d-table empty="暂无数据" table-layout="auto" :show-loading="loading" :data="tableData" style="width: 100%;height: calc(100% - 50px)" header-bg fix-header :lazy="true" @load-more="queryMore" @sort-change="handleSortChange">
+  <d-table border-type="bordered" empty="暂无数据" table-layout="auto" :show-loading="loading" :data="tableData" style="width: 100%;height: calc(100% - 50px)" header-bg :lazy="true" @load-more="queryMore" @sort-change="handleSortChange">
     <d-column field="number" header="序列号" sortable></d-column>
     <d-column field="short_name" header="简称" sortable></d-column>
     <d-column field="strain_name" header="品系名" sortable></d-column>
@@ -195,7 +195,7 @@ const handleSortChange = ({ field, direction }) => {
       </template>
     </d-column>
   </d-table>
-  <Add v-if="AddInfo.open" v-model:open="AddInfo.open" :open-type="AddInfo.openType" v-model:data="AddInfo.data!" :title="AddInfo.title" @close="AddInfo.onCloe"/>
+  <Add v-if="AddInfo.open" v-model:open="AddInfo.open" :open-type="AddInfo.openType" v-model:data="AddInfo.data!" :title="AddInfo.title" @onClose="AddInfo.onCloe"/>
   <d-modal v-model="modalInfo.open" title="温馨提示" type="warning">
     <div>{{modalInfo.msg}}</div>
     <template #footer>
