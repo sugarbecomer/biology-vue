@@ -1,173 +1,173 @@
+<script setup lang="ts">
+defineExpose({
+  name: "Login",
+});
+import { useI18n } from "vue-i18n";
+import { useLocaleStore } from "@/store/localeStore.ts";
+import { LocaleInfoMap } from "@/plugins/vueI18n/index.ts";
+import { ref } from "vue";
+import { FormRules, FormInstance, ElMessage } from "element-plus";
+import { ApiLogin, ApiLoginDto } from "@/api/login.ts";
+import { getPassword, getSign, getTimestamp } from "@/util/enc.ts";
+import { useRouter } from "vue-router";
+
+const i18n = useI18n();
+const router = useRouter();
+const { t, locale } = i18n;
+const localeStore = useLocaleStore();
+const changeLacale = (val: LocaleType) => {
+  console.log(val);
+  localeStore.setLocale(val);
+  locale.value = val;
+};
+const loginForm = ref({
+  username: "",
+  password: "",
+});
+const loginFormRef = ref<FormInstance>();
+const loginLoading = ref<boolean>(false);
+const rules = ref<FormRules<typeof loginForm>>({
+  username: [
+    {
+      required: true,
+      message: t("login.usernameValid"),
+      trigger: "blur",
+    },
+  ],
+  password: [
+    {
+      required: true,
+      message: t("login.passwordValid"),
+      trigger: "blur",
+    },
+  ],
+});
+const onLogin = () => {
+  loginFormRef.value?.validate().then((valid) => {
+    if (!valid) {
+      return false;
+    }
+    loginLoading.value = true;
+    const data: ApiLoginDto = {
+      username: loginForm.value.username,
+      password: loginForm.value.password,
+      time: getTimestamp(),
+      sign: "",
+    };
+    data.password = getPassword(data.password);
+    data.sign = getSign(data.username, String(data.time), data.password);
+    ApiLogin(data)
+      .then((res) => {
+        ElMessage.success(
+          t(`message.${res.data.message}`) || t("message.success")
+        );
+        router.push({ name: "strain" });
+      })
+      .finally(() => {
+        loginLoading.value = false;
+      });
+  });
+};
+const toReg = () => {
+  router.push({
+    name: "Register",
+  });
+};
+</script>
+
 <template>
-  <!-- 整体背景 -->
-  <div class="login-wrap">
-    <!--输入框-->
-    <div class="form-wrapper">
-      <div class="header">
-        生信管理系统
+  <div class="login-container flex-center">
+    <div
+      class="login-box relative w-[80%] h-[85%] bg-[#ffffff4d] rounded-lg select-none flex-around p-10 gap-10"
+    >
+      <el-select
+        class="language-select"
+        v-model="localeStore.locale"
+        @change="changeLacale"
+        size="small"
+      >
+        <el-option
+          v-for="item in LocaleInfoMap"
+          :key="item.value"
+          :label="item.name"
+          :value="item.value"
+        />
+      </el-select>
+      <div class="login-box-left w-[800px] hidden sm:block">
+        <img class="w-full h-full" src="@/assets/login/opr.png" alt="" />
       </div>
-      <div class="input-wrapper">
-        <div class="border-wrapper">
-          <input v-model="form.username" type="text" name="username" placeholder="请输入账号" class="border-item" autocomplete="off" />
+      <div
+        class="login-box-form w-[450px] p-10 rounded-md bg-white shadow-md opacity-[.85]"
+      >
+        <div class="login-logo">
+          <h2
+            class="text-align-center font-700 whitespace-nowrap text-[#34495e] mb-10"
+          >
+            {{ t("common.systemName") }}
+          </h2>
+          <el-form ref="loginFormRef" :model="loginForm" :rules="rules">
+            <el-form-item prop="username">
+              <el-input
+                v-model="loginForm.username"
+                size="large"
+                :placeholder="t('login.username')"
+              >
+                <template #prefix>
+                  <i class="i-ri:user-3-fill" />
+                </template>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input
+                v-model="loginForm.password"
+                type="password"
+                size="large"
+                :placeholder="t('login.password')"
+                show-password
+              >
+                <template #prefix>
+                  <i class="i-ri:lock-password-fill" />
+                </template>
+              </el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                v-loading="loginLoading"
+                @click="onLogin"
+                icon="user"
+                type="primary"
+                size="large"
+                class="w-full"
+                >{{ t("login.button") }}
+              </el-button>
+            </el-form-item>
+            <el-form-item>
+              <div class="absolute right-0 mt-5 flex-center">
+                <span class="h-[32px] text-[#999] text-xs leading-8">{{
+                  t("login.registerTip")
+                }}</span>
+                <el-button type="primary" link @click="toReg">{{
+                  t("login.registerButton")
+                }}</el-button>
+              </div>
+            </el-form-item>
+          </el-form>
         </div>
-        <div class="border-wrapper">
-          <input v-model="form.password" type="password" name="password" placeholder="请输入密码" class="border-item" autocomplete="off" />
-        </div>
-      </div>
-      <div class="action">
-        <div class="btn" @click="onLogin">登 录</div>
-      </div>
-      <div class="tip">
-        <span @click="toReg">还没有账号？立即注册</span>
       </div>
     </div>
   </div>
 </template>
-<script setup lang="ts">
-import {ref} from "vue";
-import {ApiLogin, ApiLoginDto} from "@/api/login.ts";
-import {Message} from 'vue-devui'
-import {getPassword, getSign, getTimestamp} from "@/util/enc.ts";
-import {useRouter} from "vue-router";
-const router = useRouter()
-const form = ref({
-  username: '',
-  password: '',
-})
-const onLogin = ()=>{
-  if(!form.value.username || !form.value.password){
-    Message.warning('账号或密码不能为空')
-    return
-  }
-  const data:ApiLoginDto = {
-    username: form.value.username,
-    password: form.value.password,
-    time: getTimestamp(),
-    sign: ''
-  }
-  data.password = getPassword(data.password)
-  data.sign = getSign(data.username, String(data.time), data.password)
-  ApiLogin(data).then((res)=>{
-    Message.success(res.data.message || '操作成功')
-    router.push({name: 'strain'})
-  })
-}
 
-const toReg = ()=>{
-  router.push({
-    name: 'Register'
-  })
-}
-</script>
-<style scoped>
-.login-wrap {
+<style lang="scss" scoped>
+.login-container {
+  background: url("https://t.alcy.cc/pc/");
+  background-size: cover;
   height: 100%;
-  width: 100%;
-  font-family: JetBrains Mono Medium;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* background-color: #0e92b3; */
-  background: url('@/assets/images/login-bg.png');
-  background-size: 100% 100%;
+  min-height: 800px;
 }
 
-.form-wrapper {
-  width: 400px;
-  background-color: rgba(41, 45, 62, 0.8);
-  color: #fff;
-  border-radius: 2px;
-  padding: 50px;
-}
-
-.form-wrapper .header {
-  text-align: center;
-  font-size: 35px;
-  text-transform: uppercase;
-  line-height: 100px;
-}
-
-.form-wrapper .input-wrapper input {
-  background-color: rgb(41, 45, 62);
-  border: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 15px;
-  color: #fff;
-  outline: none;
-}
-
-.form-wrapper .input-wrapper input::placeholder {
-  text-transform: uppercase;
-}
-
-.form-wrapper .input-wrapper .border-wrapper {
-  background-image: linear-gradient(to right, #e8198b, #0eb4dd);
-  width: 100%;
-  height: 50px;
-  margin-bottom: 20px;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.form-wrapper .input-wrapper .border-wrapper .border-item {
-  height: calc(100% - 4px);
-  width: calc(100% - 4px);
-  border-radius: 30px;
-}
-
-.form-wrapper .action {
-  display: flex;
-  justify-content: center;
-}
-
-.form-wrapper .action .btn {
-  width: 60%;
-  text-transform: uppercase;
-  border: 2px solid #0e92b3;
-  text-align: center;
-  line-height: 50px;
-  border-radius: 30px;
-  cursor: pointer;
-}
-
-.form-wrapper .action .btn:hover {
-  background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
-}
-
-.form-wrapper .icon-wrapper {
-  text-align: center;
-  width: 60%;
-  margin: 0 auto;
-  margin-top: 20px;
-  border-top: 1px dashed rgb(146, 146, 146);
-  padding: 20px;
-}
-
-.form-wrapper .icon-wrapper i {
-  font-size: 20px;
-  color: rgb(187, 187, 187);
-  cursor: pointer;
-  border: 1px solid #fff;
-  padding: 5px;
-  border-radius: 20px;
-}
-
-.form-wrapper .icon-wrapper i:hover {
-  background-color: #0e92b3;
-}
-.tip{
-  width: 100%;
-  text-align: center;
-  margin-top: 1rem;
-  span{
-    color: rgba(150,150,150,.5) !important;
-    user-select: none;
-    &:hover{
-      cursor: pointer;
-    }
-  }
+.language-select {
+  @apply absolute top-5 right-5 w-30 !important;
+  opacity: 0.8;
 }
 </style>

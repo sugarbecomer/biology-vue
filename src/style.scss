@@ -1,102 +1,69 @@
-html, body, #app {
+:root {
+  --el-color-primary: #009688 !important;
+  --el-color-primary-dark-2: #066f65 !important;
+  --el-color-primary-light-1: #1aa194 !important;
+  --el-color-primary-light-2: #33aba0 !important;
+  --el-color-primary-light-3: #4db6ac !important;
+  --el-color-primary-light-4: #66c0b8 !important;
+  --el-color-primary-light-5: #80cbc4 !important;
+  --el-color-primary-light-6: #99d5cf !important;
+  --el-color-primary-light-7: #b3e0db !important;
+  --el-color-primary-light-8: #cceae7 !important;
+  --el-color-primary-light-9: #e6f5f3 !important;
+  --el-logo-text-color: #303133 !important;
+  --el-menu-bg-color: #ffffff !important;
+  --el-menu-hover-bg-color: var(--el-color-primary-light-9) !important;
+  --el-menu-active-bg-color: var(--el-color-primary-light-9) !important;
+  --el-menu-text-color: #333333 !important;
+  --el-menu-active-color: var(--el-color-primary) !important;
+  --el-menu-hover-text-color: #333333 !important;
+  --el-menu-horizontal-sub-item-height: 55px !important;
+}
+*{
+  margin:0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,body,#app{
   height: 100vh;
+  width: 100vw;
 }
-
-.table-operation {
-  margin-bottom: 12px;
-}
-
-.devui-button--md {
-  height: 32px;
-  line-height: 32px;
-}
-
-.devui-form__label {
-  line-height: 32px;
-  height: 32px;
-}
-
-.query-form {
-  height: 30px;
-}
-
-.query-padding {
-  padding-left: 10px;
-  box-sizing: border-box;
-}
-
-div.form-operation {
-  margin: 0 !important;
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-  padding-top: 15px;
-  box-sizing: border-box;
-}
-
-.emptyTip {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 3rem;
-
-  span {
-    display: block;
-    color: #999;
+button .el-loading-spinner {
+  @apply top-0 mt-0 relative flex-center h-full;
+  .circular{
+    @apply w-6 h-6 [#important]
   }
 }
-
-.pointer:hover {
-  cursor: pointer;
+.el-loading-spinner{
+  @apply select-none;
 }
-
-.clear-card + .devui-card__header, .clear-card ~ .devui-card__actions {
-  display: none !important;
-}
-
-.block {
-  width: 100%;
-  height: 100%;
-  display: block;
-  text-align: center;
-}
-.flex{
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-}
-
-.devui-menu-vertical {
-  border-right: unset !important;
-}
-
-.devui-input-slot__prepend{
-  &:has(div.devui-input) {
-    padding: 0 !important;
+.el-dialog{
+  padding: 0 !important;
+  border-radius: 6px !important;
+  @apply p-0;
+  .el-dialog__header{
+    border-radius: 6px 0 0 0;
+    @apply px-4 bg-[#009688] py-0 leading-12 h-12 select-none relative;
+    .el-dialog__title{
+      @apply text-white text-md font-600;
+    }
+    .el-dialog__headerbtn{
+      @apply absolute -top-3 -right-3 bg-[#009688] w-8 h-8 shadow rounded-md leading-9 hover:bg-[#1aa194] active:bg-[#066f65];
+      i{
+        @apply text-white
+      }
+    }
   }
-  .devui-input,.devui-input__wrapper{
-    border-radius: 4px 0px 0px 4px!important;
+  .el-dialog__body{
+    @apply p-4;
   }
 }
-.mt-3{
-  margin-top: 1.5rem;
-}
-.mt-2{
-  margin-top: 1rem;
-}
-div.devui-modal{
-  max-height: 95vh !important;
-  div.devui-modal__body{
-    max-height: calc(95vh - 56px) !important;
-    overflow-y: auto !important;
+.el-form{
+  .el-form-item__label{
+    margin-bottom: 0 !important;
+    @apply select-none;
   }
 }
-.devui-table__empty{
-  position: absolute;
-  top: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+.el-row,.el-col{
+  @apply select-none;
 }

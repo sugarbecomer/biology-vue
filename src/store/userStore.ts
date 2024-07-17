@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import {ApiHeartBeat} from "@/api/login.ts";
 
 export const useUserStore = defineStore('userStore', {
     state() {
@@ -18,6 +19,13 @@ export const useUserStore = defineStore('userStore', {
         },
         async logout() {
             await this.clear()
+        },
+        async refreshToken(){
+            ApiHeartBeat().then(res=>{
+                if (res.data.code === -401){
+                    this.clear()
+                }
+            })
         }
     },
     persist: {

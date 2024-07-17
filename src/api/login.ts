@@ -14,3 +14,7 @@ export const ApiLogin = (data: ApiLoginDto) => {
 export const ApiRegister = (data: ApiLoginDto) =>{
     return request.post('/register', data);
 }
+
+export const ApiHeartBeat = ()=>{
+    return request.post("/valid")
+}

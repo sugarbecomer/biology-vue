@@ -1,17 +1,16 @@
 import { createApp } from 'vue'
-import App from "./App.vue";
-import DevUI from 'vue-devui';
+import 'virtual:uno.css'
 import './style.scss'
-import 'vue-devui/style.css';
-import 'devui-theme/styles-var/devui-var.scss'
-import '@devui-design/icons/icomoon/devui-icon.css';
-import { ThemeServiceInit, infinityTheme } from 'devui-theme';
-import router from '@/router/index'
+import App from './App.vue'
 import {setupPinia} from "@/store/pinia.ts";
-ThemeServiceInit({ infinityTheme }, 'infinityTheme');
-
+import {setupI18n} from "@/plugins/vueI18n";
+import {setupRouter} from "@/plugins/router";
 const app = createApp(App)
+import '@iconify-json/ri'
+import 'element-plus/dist/index.css'
+import {setupInfiniteScroll} from "@/plugins/infiniteScroll";
 setupPinia(app)
-app.use(router)
-app.use(DevUI)
+setupI18n(app)
+setupRouter(app)
+setupInfiniteScroll(app)
 app.mount('#app')

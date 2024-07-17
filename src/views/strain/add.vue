@@ -1,219 +1,171 @@
 <script setup lang="ts">
-import Extra from "@/views/strain/components/extra.vue";
-import {computed, onMounted, ref} from "vue";
-import {ExtraInfo} from "@/views/strain/components/extraEdit.vue";
-import {getSign, getTimestamp} from "@/util/enc.ts";
-import {ApiGetNumber, ApiStrainAdd, ApiStrainUpdate} from "@/api/strain.ts";
-import {Message} from "vue-devui";
-import {ApiAlleleSearch} from "@/api/allele.ts";
-
-export interface IAllele {
-  id?: number,
-  name: string,
-  genome: string,
-  loading?: boolean
-  options?: any
+import InputTag from "@/components/input-tag/input-tag.vue";
+import StrainAllele from "@/views/strain/allele.vue";
+import StrainExtra from "@/views/strain/extra.vue";
+import { getSign, getTimestamp } from "@/util/enc.ts";
+import { ApiGetNumber, ApiStrainAdd, ApiStrainUpdate } from "@/api/strain.ts";
+import { Ref, watch, computed } from "vue";
+import { reactive } from "vue";
+import { ElMessage } from "element-plus";
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+interface IStrainAddProp {
+  title?: string;
+  open?: boolean;
+  id?: number;
+  data?: IStrainAddDto;
+  close?: (refresh: boolean) => {};
 }
-
-export interface IAddInfo {
-  id?: number
-  number: string,
-  strain_name: string,
-  short_name: string[],
-  strain_annotate: string[],
-  strain_extra: ExtraInfo[],
-  allele: IAllele[]
-}
-
-interface IProp {
-  title: string,
-  open: boolean,
-  data: IAddInfo,
-  openType: number,
-}
-
-const emit = defineEmits(['onClose', "update:open", "update:data"])
-const props = defineProps<IProp>()
-const tempOpen = computed({
+defineOptions({
+  name: "StrainAdd",
+});
+const props = defineProps<IStrainAddProp>();
+const emit = defineEmits(["close", "update:open", "update:data"]);
+const { t } = useI18n();
+const modalOpen = computed({
   get() {
-    return props.open
+    return props.open;
   },
-  set(val) {
-    emit("update:open", val)
-  }
-})
-const tempForm = computed({
+  set(newVal) {
+    emit("update:open", newVal);
+  },
+});
+const modalData: Ref<IStrainAddDto> = computed({
   get() {
-    return props.data
+    return props.data || reactive({});
   },
-  set(val) {
-    emit("update:data", val)
-  }
-})
-const cancel = () => {
-  tempOpen.value = false
-}
-const onAddAllele = () => {
-  tempForm.value.allele.push({
-    name: "",
-    genome: ""
-  })
-}
-const onDelAllele = () => {
-  tempForm.value.allele.pop()
-}
-const loading = ref(false)
-const onSave = () => {
-  const data = JSON.parse(JSON.stringify(tempForm.value))
-  data.allele = data.allele.map(subData => {
-    return {
-      "id": subData.id,
-      "name": subData.name,
-      "genome": subData.genome
-    }
-  })
-  data.strain_extra = data.strain_extra.filter(item => item.extra_key && item.extra_value)
-  loading.value = true
-  const func = props.openType === 1 ? ApiStrainAdd : ApiStrainUpdate
-  func(data).then(res => {
-    Message.success(res.data.message || "保存成功")
-    emit('onClose', true)
-  }).finally(() => {
-    loading.value = false
-  })
-}
+  set(newVal) {
+    emit("update:data", newVal);
+  },
+}) as Ref<IStrainAddDto>;
+const handleClose = () => {
+  emit("close", false);
+};
+const loading = ref(false);
+const handleSave = () => {
+  const data = JSON.parse(JSON.stringify(modalData.value));
+  data.allele = data.allele
+    .filter((subData) => subData.name && subData.genome)
+    .map((subData) => {
+      return {
+        id: subData.id,
+        name: subData.name,
+        genome: subData.genome,
+      };
+    });
+  loading.value = true;
+  const func = !!props.id ? ApiStrainUpdate : ApiStrainAdd;
+  func(data)
+    .then((res) => {
+      ElMessage.success(
+        t(`message.${res.data.message}`) || t("message.success")
+      );
+    })
+    .finally(() => {
+      loading.value = false;
+    });
+  handleClose();
+};
 const handleGetNumber = () => {
-  const time = getTimestamp()
-  const sign = getSign(String(time))
+  const time = getTimestamp();
+  const sign = getSign(String(time));
   const data = {
-    time, sign
+    time,
+    sign,
+  };
+  ApiGetNumber(data).then((res) => {
+    modalData.value.number = res.data.data.mumber;
+  });
+};
+watch(
+  () => props.open,
+  (val) => {
+    if (!val) {
+      return;
+    }
+    if (!props.id) {
+      handleGetNumber();
+    }
+  },
+  {
+    immediate: true,
   }
-  ApiGetNumber(data).then(res => {
-    tempForm.value.number = res.data.data.mumber
-  })
-}
-// 查询基因列表
-const handleQueryAllele = (value: string, row: IAllele) => {
-  row.loading = true
-  if (!value) {
-    return
-  }
-  const params = {
-    name: value
-  }
-  ApiAlleleSearch(params).then(res => {
-    // 如果没查询到任何基因信息则默认新增一个value值的基因名的基因信息
-    row.options = res.data.data.allele || [{name: value, genome: ""}];
-  }).finally(() => {
-    row.loading = false
-  })
-}
-const handleAlleleChange = (data: any, row: IAllele) => {
-  row.name = data.name
-  if (data.id) {
-    row.id = data.id
-    row.genome = data.genome
-  }else{
-    row.id = undefined
-    row.genome = ""
-  }
-}
-onMounted(() => {
-  if (props.openType === 1) {
-    handleGetNumber()
-  }
-})
+);
 </script>
-
 <template>
-  <d-modal v-model="tempOpen" :title="props.title" :keep-last="true" style="width: 700px" :escapable="false"
-           :close-on-click-overlay="false">
-    <d-form v-model="tempForm" layout="vertical">
-      <d-row :gutter="20">
-        <d-col :span="12">
-          <d-form-item label="序列号" prop="number">
-            <d-input v-model="tempForm.number" placeholder="请输入序列号"/>
-          </d-form-item>
-        </d-col>
-        <d-col :span="12">
-          <d-form-item label="品系名" prop="strain_name">
-            <d-input v-model="tempForm.strain_name" placeholder="请输入品系名"/>
-          </d-form-item>
-        </d-col>
-      </d-row>
-      <d-form-item label="简称(可以是多个)" prop="short_name">
-        <d-select v-model="tempForm.short_name" :options="[]" :allow-clear="true" multiple filter allow-create
-                  placeholder="请选择或输入简称"></d-select>
-        <!--        <d-input v-model="tempForm.stain_name" placeholder="请输入简称" />-->
-      </d-form-item>
-
-
-      <d-form-item label="注释(品系名注解，可以是多个)" prop="stain_name" label-size="sm">
-        <!--        <d-input v-model="tempForm.strain_annotate" placeholder="请输入注释"/>-->
-        <d-select v-model="tempForm.strain_annotate" :options="[]" :allow-clear="true" multiple filter allow-create
-                  placeholder="请选择或输入注释"></d-select>
-      </d-form-item>
-      <d-form-item label="额外信息" prop="strain_extra" label-size="sm">
-        <extra v-model="tempForm.strain_extra"/>
-      </d-form-item>
-      <d-card shadow="never">
-        <template #default>
-          <d-row :gutter="20">
-            <d-col :span="8">
-              <span class="custom-form-item">
-                基因名
-              </span>
-            </d-col>
-            <d-col :span="16">
-              <span class="custom-form-item">
-                基因修饰情况
-              </span>
-            </d-col>
-          </d-row>
-          <template v-for="item in tempForm.allele">
-            <d-row :gutter="20" class="custom-form-item-row">
-              <d-col :span="8">
-                  <!--                  <d-input v-model="item.name" placeholder="请输入基因名"/>-->
-                  <d-select v-model="item.name" :filter="(val)=>handleQueryAllele(val,item)" :allow-clear="true" remote
-                            :loading="item.loading" allow-create
-                            placeholder="请输入基因名" @value-change="(val)=>handleAlleleChange(val.value, item)">
-                    <d-option v-for="option in item.options || []" :key="'allele_name_' + option.id" :value="option"
-                              :name="option.name"></d-option>
-                  </d-select>
-              </d-col>
-              <d-col :span="16">
-                  <d-input :disabled="item.id" v-model="item.genome" placeholder="请输入基因修饰情况"/>
-              </d-col>
-            </d-row>
-          </template>
-          <div class="block flex custom-form-item-row">
-            <d-button variant="solid" icon="add" shape="circle" @click="onAddAllele"></d-button>
-            <d-button variant="solid" color="danger" icon="delete" shape="circle" @click="onDelAllele"></d-button>
-          </div>
-        </template>
-      </d-card>
-
-
-      <d-form-operation class="form-operation">
-        <d-button variant="solid" @click="onSave">保存</d-button>
-        <d-button @click="cancel">取消</d-button>
-      </d-form-operation>
-
-    </d-form>
-
-  </d-modal>
+  <el-dialog
+    append-to-body
+    align-center
+    v-model="modalOpen"
+    :title="props.title"
+    width="600"
+    :before-close="handleClose"
+    :close-on-click-modal="false"
+  >
+    <el-form v-model="modalData" layout="vertical" label-position="top">
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <el-form-item :label="t('strain.dialog.number.label')" prop="number">
+            <el-input
+              v-model="modalData.number"
+              :placeholder="t('strain.dialog.number.placeholder')"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="16">
+          <el-form-item
+            :label="t('strain.dialog.strain_name.label')"
+            prop="strain_name"
+          >
+            <el-input
+              v-model="modalData.strain_name"
+              :placeholder="t('strain.dialog.strain_name.placeholder')"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item
+            :label="t('strain.dialog.short_name')"
+            prop="short_name"
+          >
+            <input-tag v-model="modalData.short_name" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item
+            :label="t('strain.dialog.strain_annotate')"
+            prop="strain_annotate"
+          >
+            <input-tag v-model="modalData.strain_annotate" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item
+            :label="t('strain.dialog.strain_extra')"
+            prop="strain_extra"
+          >
+            <strain-extra v-model="modalData.strain_extra" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item :label="t('strain.dialog.allele')" prop="allele">
+            <strain-allele v-model="modalData.allele" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <div class="w-full flex-center p-1 pb-0">
+      <el-button @click="handleSave" type="primary">{{
+        t("common.button.confirm")
+      }}</el-button>
+    </div>
+  </el-dialog>
 </template>
-
-
-<style lang="scss" scoped>
-.custom-form-item{
-  color:var(--devui-aide-text, #71757f)
-}
-.custom-form-item-row{
-  margin-top: 8px;
-}
-:deep(.devui-card__actions),:deep(.devui-card__header){
-  margin:0;
-  height: 0;
-}
-</style>

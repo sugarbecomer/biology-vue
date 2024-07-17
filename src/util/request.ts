@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {useUserStore} from "@/store/userStore.ts";
-import {Message} from "vue-devui";
+import { ElMessage } from 'element-plus'
 import router from '@/router'
 
 export const request = axios.create({
@@ -33,10 +33,10 @@ request.interceptors.response.use(
         if (config.data.code == 401) {
             // 401未登录
             useUserStore().clear()
-            Message.error('请先登录')
+            ElMessage.error('请先登录')
             router.push({ name: 'login' })
         } else if (config.data.code >= 400) {
-            Message.error(config.data.message || '未知错误');
+            ElMessage.error(config.data.message || '未知错误');
             return Promise.reject(config.data)
         }
         // 登录成功获取 token
@@ -44,6 +44,7 @@ request.interceptors.response.use(
             const token = config.data.data.token
             const userStore = useUserStore()
             userStore.token = token;
+            userStore.username = config.data.data.user_name;
         }
         return config
     },
