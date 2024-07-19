@@ -219,7 +219,7 @@ const onAdd = () => {
         >
           <template #default="scope">
             <template v-for="item in scope.row.allele">
-              <el-tag size="small" type="success">{{ item.name }}</el-tag>
+              <el-tag v-if="item.name" size="small" type="success">{{ item.name }}</el-tag>
             </template>
           </template>
         </el-table-column>
