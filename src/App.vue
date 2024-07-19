@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
-// const locale = useLocaleStore();
+import cn from 'element-plus/es/locale/lang/zh-cn';
 
 </script>
 
 <template>
   <ElConfigProvider
-      :locale="zhCn"
+      :locale="cn"
       :message="{ max: 1 }"
   >
     <RouterView/>

@@ -4,7 +4,7 @@ declare type TableType<T> = {
   loading: boolean;
   data: T[];
   update(data: T): void;
-  delete(id: number): void;
+  delete(id: any): void;
 };
 
 declare enum MODAL_OPEN_TYPE {

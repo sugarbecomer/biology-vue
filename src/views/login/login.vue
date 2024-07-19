@@ -10,14 +10,15 @@ import { FormRules, FormInstance, ElMessage } from "element-plus";
 import { ApiLogin, ApiLoginDto } from "@/api/login.ts";
 import { getPassword, getSign, getTimestamp } from "@/util/enc.ts";
 import { useRouter } from "vue-router";
-
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import en from 'element-plus/es/locale/lang/en.mjs';
 const i18n = useI18n();
 const router = useRouter();
 const { t, locale } = i18n;
 const localeStore = useLocaleStore();
 const changeLacale = (val: LocaleType) => {
-  console.log(val);
   localeStore.setLocale(val);
+  localeStore.elLocale = val === 'zh-CN'? zhCn : en;
   locale.value = val;
 };
 const loginForm = ref({

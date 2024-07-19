@@ -5,6 +5,7 @@ import { ApiStrainList, ApiStrainDel } from "@/api/strain.ts";
 import { ElMessage, ElMessageBox, FormInstance } from "element-plus";
 import { default as vElTableInfiniteScroll } from "el-table-infinite-scroll";
 import StrainAdd from "./add.vue";
+import {useUserStore} from "@/store/userStore.ts";
 defineOptions({
   name: "StrainList",
 });
@@ -41,12 +42,16 @@ const tableInfo = ref<TableType<IStrainList>>({
     addInfo.value.open = true;
     console.log(data);
   },
-  delete(id: number) {
+  delete(row: any) {
     let msg = t("common.delConfirm");
-    msg.replace("{ids}", "" + id);
-    ElMessageBox.confirm(msg).then(() => {
+    console.log(msg)
+    msg = msg.replace("name", row.strain_name as string);
+    console.log(msg)
+    ElMessageBox.confirm(msg,{
+      type: "warning",
+    }).then(() => {
       tableInfo.value.loading = true;
-      ApiStrainDel(id)
+      ApiStrainDel(row.id)
         .then((res) => {
           ElMessage.success(
             t(`message.${res.data.message}`) || t("message.success")
@@ -74,6 +79,7 @@ const handleQuery = () => {
   pageInfo.value.page_no = 1;
   queryList();
 };
+const userStore = useUserStore();
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   pageInfo.value.total = 0;
@@ -131,6 +137,7 @@ const onAdd = () => {
       ref="queryFormRef"
       :inline="true"
       label-width="78px"
+      @submit.native.prevent="handleQuery"
     >
       <el-form-item :label="t('strain.list.search.label')" prop="key">
         <el-input
@@ -167,7 +174,7 @@ const onAdd = () => {
       </el-form-item>
     </el-form>
     <div class="flex justify-end mb-3">
-      <el-button type="primary" @click="onAdd">
+      <el-button :disabled="!userStore.username" type="primary" @click="onAdd">
         <template #icon><i class="i-ri:add-large-line"></i></template>
         {{ t("common.button.add") }}
       </el-button>
@@ -248,13 +255,13 @@ const onAdd = () => {
         <el-table-column
           :label="t('common.table.operation')"
           align="center"
-          width="300"
+          width="120"
         >
           <template #default="scope">
-            <el-button type="primary" link @click="tableInfo?.update(scope.row)"
+            <el-button :disabled="!userStore.username" type="primary" link @click="tableInfo?.update(scope.row)"
               >{{ t("common.button.update") }}
             </el-button>
-            <el-button type="danger" link @click="tableInfo?.delete(scope.row)"
+            <el-button :disabled="!userStore.username" type="danger" link @click="tableInfo?.delete(scope.row)"
               >{{ t("common.button.delete") }}
             </el-button>
           </template>

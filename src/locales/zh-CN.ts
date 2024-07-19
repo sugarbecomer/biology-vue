@@ -18,7 +18,7 @@ export default {
       confirm: "确定",
     },
     loadingText: "数据正在加载中...",
-    delConfirm: "确定删除ID为[{ids}]的数据吗？",
+    delConfirm: "确定删除[name]的数据吗？",
   },
   // 消息的文字提示
   message: {

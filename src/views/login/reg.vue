@@ -105,7 +105,7 @@ const toLogin = () => {
               <el-button
                 @click="onRegister"
                 icon="user"
-                type="primary"
+                type="success"
                 size="large"
                 class="w-full"
                 >{{ t("register.button") }}
