@@ -211,8 +211,8 @@ const onAdd = () => {
           sortable="custom"
         >
           <template #default="scope">
-            <template v-for="item in scope.row.allele">
-              <div><el-tag v-if="item.short_name" size="small" type="primary">{{ item.short_name }}</el-tag></div>
+            <template v-for="item in scope.row.short_name">
+              <div><el-tag v-if="item" size="small" type="primary">{{ item }}</el-tag></div>
             </template>
           </template>
         </el-table-column>
