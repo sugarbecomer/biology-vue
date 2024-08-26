@@ -210,6 +210,11 @@ const onAdd = () => {
           prop="short_name"
           sortable="custom"
         >
+          <template #default="scope">
+            <template v-for="item in scope.row.allele">
+              <div><el-tag v-if="item.short_name" size="small" type="primary">{{ item.short_name }}</el-tag></div>
+            </template>
+          </template>
         </el-table-column>
         <el-table-column
           :label="t('strain.list.table.strain_name')"
@@ -226,7 +231,7 @@ const onAdd = () => {
         >
           <template #default="scope">
             <template v-for="item in scope.row.allele">
-              <el-tag v-if="item.name" size="small" type="success">{{ item.name }}</el-tag>
+              <div><el-tag v-if="item.name" size="small" type="success">{{ item.name }}</el-tag></div>
             </template>
           </template>
         </el-table-column>
@@ -237,7 +242,7 @@ const onAdd = () => {
         >
           <template #default="scope">
             <template v-for="item in scope.row.allele">
-              <el-tag v-if="item.genome" size="small" type="warning">{{ item.genome }}</el-tag>
+              <div><el-tag v-if="item.genome" size="small" type="warning">{{ item.genome }}</el-tag></div>
             </template>
           </template>
         </el-table-column>
