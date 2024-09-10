@@ -100,4 +100,26 @@ export default {
       },
     },
   },
+  // 基因管理页面文字
+  allele: {
+    list: {
+      search: {
+        label: '查询数据:',
+        placeholder: '可搜索任意字段的数据',
+      },
+      table: {
+        name: '名称',
+        genome: '修饰情况',
+        serial: '染色体',
+        annotate: '注解',
+        extra: '额外信息',
+      },
+      add: {
+        title: '新增品系',
+      },
+      update: {
+        title: '修改品系',
+      },
+    },
+  },
 };
