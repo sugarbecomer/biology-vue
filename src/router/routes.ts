@@ -22,11 +22,11 @@ export const routes: RouteRecordRaw[] = [
                 path: "/strain",
                 component: () => import("@/views/strain/list.vue"),
             },
-            // {
-            //     name: "allele",
-            //     path: "/allele",
-            //     component: () => import("@/views/allele/index.vue"),
-            // },
+            {
+                name: "allele",
+                path: "/allele",
+                component: () => import("@/views/allele/list.vue"),
+            },
             // {
             //     name: "annotate",
             //     path: "/annotate",
