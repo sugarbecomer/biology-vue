@@ -27,25 +27,15 @@ const tableInfo = ref<TableType<IStrainList>>({
   update(data: IStrainList) {
     const _data = JSON.parse(JSON.stringify(data));
     addInfo.value.id = data.id;
-    // 拼接options用于回显
-    _data.allele.map((_subData) => {
-      _subData.options = [
-        {
-          id: _subData.id,
-          name: _subData.name,
-          genome: _subData.genome,
-        },
-      ];
-    });
     addInfo.value.data = _data;
-    addInfo.value.title = t('strain.list.update.title');
+    addInfo.value.title = t('allele.list.update.title');
     addInfo.value.open = true;
     console.log(data);
   },
   delete(row: any) {
     let msg = t('common.delConfirm');
     console.log(msg);
-    msg = msg.replace('name', row.strain_name as string);
+    msg = msg.replace('name', row.name as string);
     console.log(msg);
     ElMessageBox.confirm(msg, {
       type: 'warning',
@@ -111,7 +101,7 @@ const loadMore = () => {
 onMounted(() => {
   handleQuery();
 });
-const addInfo = ref<IStrainAddProp>({
+const addInfo = ref<IAlleleAddProp>({
   close: (refresh: boolean) => {
     if (refresh) {
       handleQuery();
@@ -134,11 +124,11 @@ const onAdd = () => {
       label-width="78px"
       @submit.native.prevent="handleQuery"
     >
-      <el-form-item :label="t('strain.list.search.label')" prop="key">
+      <el-form-item :label="t('allele.list.search.label')" prop="key">
         <el-input
           v-model="queryParams.key"
           maxlength="30"
-          :placeholder="t('strain.list.search.placeholder')"
+          :placeholder="t('allele.list.search.placeholder')"
           clearable
           style="width: 300px"
         />

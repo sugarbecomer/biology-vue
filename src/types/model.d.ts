@@ -34,6 +34,13 @@ declare interface IAlleleAddDto {
   serial?: string;
   extra?: IExtraInfo[];
 }
+declare interface IAlleleAddProp {
+  title?: string;
+  open?: boolean;
+  id?: number;
+  data?: IAlleleAddDto;
+  close?: (refresh: boolean) => void;
+}
 
 declare interface IStrainList {
   id: number;
