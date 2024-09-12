@@ -26,6 +26,15 @@ declare interface IStrainAddDto {
   allele?: IAllele[];
 }
 
+declare interface IAlleleAddDto {
+  id?: number;
+  name?: string;
+  annotate?: string[];
+  genome?: string;
+  serial?: string;
+  extra?: IExtraInfo[];
+}
+
 declare interface IStrainList {
   id: number;
   number: string;

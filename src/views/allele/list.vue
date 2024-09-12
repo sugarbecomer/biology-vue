@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ApiStrainList, ApiStrainDel } from '@/api/strain.ts';
 import { ElMessage, ElMessageBox, FormInstance } from 'element-plus';
 import { default as vElTableInfiniteScroll } from 'el-table-infinite-scroll';
-// import StrainAdd from "./add.vue";
+import AlleleAdd from './add.vue';
 import { useUserStore } from '@/store/userStore.ts';
-import { ApiAlleleList } from '@/api/allele.ts';
+import { ApiAlleleList, ApiAlleleDelete } from '@/api/allele.ts';
 defineOptions({
   name: 'AlleleList',
 });
@@ -52,9 +51,9 @@ const tableInfo = ref<TableType<IStrainList>>({
       type: 'warning',
     }).then(() => {
       tableInfo.value.loading = true;
-      ApiStrainDel(row.id)
+      ApiAlleleDelete(row.id)
         .then((res) => {
-          ElMessage.success(t(`message.${res.data.message}`) || t('message.success'));
+          ElMessage.success(t(`message.${res.data.key}`) || t('message.success'));
         })
         .finally(() => {
           handleQuery();
@@ -121,7 +120,7 @@ const addInfo = ref<IStrainAddProp>({
   },
 });
 const onAdd = () => {
-  addInfo.value.title = t('strain.list.add.title');
+  addInfo.value.title = t('allele.list.add.title');
   addInfo.value.data = {};
   addInfo.value.open = true;
 };
@@ -196,6 +195,14 @@ const onAdd = () => {
         >
         </el-table-column>
         <el-table-column
+          :label="t('allele.list.table.serial')"
+          align="center"
+          prop="serial"
+          sortable="custom"
+          width="100"
+        >
+        </el-table-column>
+        <el-table-column
           :label="t('allele.list.table.annotate')"
           align="center"
           prop="annotate"
@@ -207,13 +214,7 @@ const onAdd = () => {
             </template>
           </template>
         </el-table-column>
-        <el-table-column
-          :label="t('allele.list.table.serial')"
-          align="center"
-          prop="serial"
-          sortable="custom"
-        >
-        </el-table-column>
+
         <el-table-column
           :label="t('allele.list.table.extra')"
           align="center"
@@ -249,13 +250,13 @@ const onAdd = () => {
       </el-table>
     </div>
   </div>
-  <!--  <StrainAdd-->
-  <!--      :open="addInfo.open"-->
-  <!--      :title="addInfo.title"-->
-  <!--      :id="addInfo.id"-->
-  <!--      v-model:data="addInfo.data"-->
-  <!--      @close="addInfo.close"-->
-  <!--  />-->
+  <AlleleAdd
+    :open="addInfo.open"
+    :title="addInfo.title"
+    :id="addInfo.id"
+    v-model:data="addInfo.data"
+    @close="addInfo.close"
+  />
 </template>
 
 <style lang="scss">

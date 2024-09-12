@@ -115,11 +115,27 @@ export default {
         extra: '额外信息',
       },
       add: {
-        title: '新增品系',
+        title: '新增基因',
       },
       update: {
-        title: '修改品系',
+        title: '修改基因',
       },
+    },
+    dialog: {
+      name: {
+        label: '基因名称',
+        placeholder: '请输入基因名称',
+      },
+      genome: {
+        label: '基因修饰情况',
+        placeholder: '请输入基因修饰情况',
+      },
+      serial: {
+        label: '染色体',
+        placeholder: '请输入染色体',
+      },
+      annotate: '基因注解',
+      extra: '额外信息',
     },
   },
 };
