@@ -110,6 +110,7 @@ const addInfo = ref<IAlleleAddProp>({
   },
 });
 const onAdd = () => {
+  addInfo.value.id = null;
   addInfo.value.title = t('allele.list.add.title');
   addInfo.value.data = {};
   addInfo.value.open = true;

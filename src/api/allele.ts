@@ -5,7 +5,7 @@ export const ApiAlleleSearch = (params: any) => {
 };
 
 export const ApiAlleleList = (params: any) => {
-  return request.post('/biology/allele_list', params);
+  return request.post('/allele_list', params);
 };
 
 export const ApiAlleleAdd = (params: any) => {

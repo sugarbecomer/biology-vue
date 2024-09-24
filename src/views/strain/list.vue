@@ -1,20 +1,20 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
-import { useI18n } from "vue-i18n";
-import { ApiStrainList, ApiStrainDel } from "@/api/strain.ts";
-import { ElMessage, ElMessageBox, FormInstance } from "element-plus";
-import { default as vElTableInfiniteScroll } from "el-table-infinite-scroll";
-import StrainAdd from "./add.vue";
-import {useUserStore} from "@/store/userStore.ts";
+import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { ApiStrainList, ApiStrainDel } from '@/api/strain.ts';
+import { ElMessage, ElMessageBox, FormInstance } from 'element-plus';
+import { default as vElTableInfiniteScroll } from 'el-table-infinite-scroll';
+import StrainAdd from './add.vue';
+import { useUserStore } from '@/store/userStore.ts';
 defineOptions({
-  name: "StrainList",
+  name: 'StrainList',
 });
 const { t } = useI18n();
 const queryFormRef = ref<FormInstance>();
 const queryParams = ref<IStrainListQueryDto>({
-  key: "",
-  field: "",
-  order: "",
+  key: '',
+  field: '',
+  order: '',
 });
 const pageInfo = ref({
   page_no: 1,
@@ -38,24 +38,22 @@ const tableInfo = ref<TableType<IStrainList>>({
       ];
     });
     addInfo.value.data = _data;
-    addInfo.value.title = t("strain.list.update.title");
+    addInfo.value.title = t('strain.list.update.title');
     addInfo.value.open = true;
     console.log(data);
   },
   delete(row: any) {
-    let msg = t("common.delConfirm");
-    console.log(msg)
-    msg = msg.replace("name", row.strain_name as string);
-    console.log(msg)
-    ElMessageBox.confirm(msg,{
-      type: "warning",
+    let msg = t('common.delConfirm');
+    console.log(msg);
+    msg = msg.replace('name', row.strain_name as string);
+    console.log(msg);
+    ElMessageBox.confirm(msg, {
+      type: 'warning',
     }).then(() => {
       tableInfo.value.loading = true;
       ApiStrainDel(row.id)
         .then((res) => {
-          ElMessage.success(
-            t(`message.${res.data.message}`) || t("message.success")
-          );
+          ElMessage.success(t(`message.${res.data.message}`) || t('message.success'));
         })
         .finally(() => {
           handleQuery();
@@ -89,16 +87,13 @@ const resetQuery = () => {
 const handleSortChange = ({ column, order }) => {
   console.log(column, order);
   queryParams.value.field = column.property;
-  queryParams.value.order = order.toLowerCase().replaceAll("ending", "");
+  queryParams.value.order = order.toLowerCase().replaceAll('ending', '');
   pageInfo.value.total = 0;
   pageInfo.value.page_no = 1;
   queryList();
 };
 const loadMore = () => {
-  if (
-    pageInfo.value.total <= tableInfo.value.data.length ||
-    tableInfo.value.loading
-  ) {
+  if (pageInfo.value.total <= tableInfo.value.data.length || tableInfo.value.loading) {
     return;
   }
   tableInfo.value.loading = true;
@@ -125,7 +120,8 @@ const addInfo = ref<IStrainAddProp>({
   },
 });
 const onAdd = () => {
-  addInfo.value.title = t("strain.list.add.title");
+  addInfo.value.id = null;
+  addInfo.value.title = t('strain.list.add.title');
   addInfo.value.data = {};
   addInfo.value.open = true;
 };
@@ -149,34 +145,24 @@ const onAdd = () => {
         />
       </el-form-item>
       <el-form-item>
-        <el-button
-          plain
-          v-loading="tableInfo.loading"
-          type="primary"
-          @click="handleQuery"
-        >
+        <el-button plain v-loading="tableInfo.loading" type="primary" @click="handleQuery">
           <template #icon>
             <i class="i-ri:search-line"></i>
           </template>
-          {{ t("common.button.query") }}
+          {{ t('common.button.query') }}
         </el-button>
-        <el-button
-          v-loading="tableInfo.loading"
-          @click="resetQuery"
-          type="danger"
-          plain
-        >
+        <el-button v-loading="tableInfo.loading" @click="resetQuery" type="danger" plain>
           <template #icon>
             <i class="i-ri:delete-bin-6-line"></i>
           </template>
-          {{ t("common.button.reset") }}
+          {{ t('common.button.reset') }}
         </el-button>
       </el-form-item>
     </el-form>
     <div class="flex justify-end mb-3">
       <el-button :disabled="!userStore.username" type="primary" @click="onAdd">
         <template #icon><i class="i-ri:add-large-line"></i></template>
-        {{ t("common.button.add") }}
+        {{ t('common.button.add') }}
       </el-button>
     </div>
     <div class="table-container">
@@ -192,10 +178,8 @@ const onAdd = () => {
       >
         <template #empty>
           <div class="empty-text flex-center gap-3 p-5 select-none">
-            <i
-              class="i-ri:emotion-normal-fill w-10 h-10 inline-block text-red-200"
-            ></i>
-            <span>{{ t("common.table.emptyText") }}</span>
+            <i class="i-ri:emotion-normal-fill w-10 h-10 inline-block text-red-200"></i>
+            <span>{{ t('common.table.emptyText') }}</span>
           </div>
         </template>
         <el-table-column
@@ -212,7 +196,9 @@ const onAdd = () => {
         >
           <template #default="scope">
             <template v-for="item in scope.row.short_name">
-              <div><el-tag v-if="item" size="small" type="primary">{{ item }}</el-tag></div>
+              <div>
+                <el-tag v-if="item" size="small" type="primary">{{ item }}</el-tag>
+              </div>
             </template>
           </template>
         </el-table-column>
@@ -231,18 +217,18 @@ const onAdd = () => {
         >
           <template #default="scope">
             <template v-for="item in scope.row.allele">
-              <div><el-tag v-if="item.name" size="small" type="success">{{ item.name }}</el-tag></div>
+              <div>
+                <el-tag v-if="item.name" size="small" type="success">{{ item.name }}</el-tag>
+              </div>
             </template>
           </template>
         </el-table-column>
-        <el-table-column
-          :label="t('strain.list.table.allele_genome')"
-          align="center"
-          prop="allele"
-        >
+        <el-table-column :label="t('strain.list.table.allele_genome')" align="center" prop="allele">
           <template #default="scope">
             <template v-for="item in scope.row.allele">
-              <div><el-tag v-if="item.genome" size="small" type="warning">{{ item.genome }}</el-tag></div>
+              <div>
+                <el-tag v-if="item.genome" size="small" type="warning">{{ item.genome }}</el-tag>
+              </div>
             </template>
           </template>
         </el-table-column>
@@ -257,17 +243,21 @@ const onAdd = () => {
             </template>
           </template>
         </el-table-column>
-        <el-table-column
-          :label="t('common.table.operation')"
-          align="center"
-          width="120"
-        >
+        <el-table-column :label="t('common.table.operation')" align="center" width="120">
           <template #default="scope">
-            <el-button :disabled="!userStore.username" type="primary" link @click="tableInfo?.update(scope.row)"
-              >{{ t("common.button.update") }}
+            <el-button
+              :disabled="!userStore.username"
+              type="primary"
+              link
+              @click="tableInfo?.update(scope.row)"
+              >{{ t('common.button.update') }}
             </el-button>
-            <el-button :disabled="!userStore.username" type="danger" link @click="tableInfo?.delete(scope.row)"
-              >{{ t("common.button.delete") }}
+            <el-button
+              :disabled="!userStore.username"
+              type="danger"
+              link
+              @click="tableInfo?.delete(scope.row)"
+              >{{ t('common.button.delete') }}
             </el-button>
           </template>
         </el-table-column>
